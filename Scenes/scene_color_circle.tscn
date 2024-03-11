@@ -1,0 +1,336 @@
+[gd_scene load_steps=12 format=3 uid="uid://87bvndhy0xir"]
+
+[ext_resource type="PackedScene" uid="uid://ryvkkr701wml" path="res://Scenes/BG.tscn" id="1_xp0co"]
+[ext_resource type="Shader" path="res://Assets/Cutout.gdshader" id="2_q5ciu"]
+[ext_resource type="Texture2D" uid="uid://cnla3f3qe50ly" path="res://Sprites/Scenes/Scene 4/Sharpie.png" id="3_1anh2"]
+[ext_resource type="Shader" path="res://Shader/pixel_shader_material.gdshader" id="3_5c3u3"]
+[ext_resource type="PackedScene" uid="uid://btom87k2ao2y2" path="res://Ui/hud.tscn" id="4_pxjbv"]
+
+[sub_resource type="GDScript" id="GDScript_ac1a0"]
+script/source = "extends Control
+
+
+@onready var mouse_pin: PinJoint2D = $Sharpie2/RigidBody2D/MousePin
+@onready var fake_body: StaticBody2D = $Sharpie2/RigidBody2D/MousePin/FakeBody
+@onready var rigid_body_2d: RigidBody2D = $Sharpie2/RigidBody2D
+
+var click_pos: Array = []
+var current_line :Line2D
+
+const max_speed = 500
+var is_dragging = false
+var is_mouse_inside = true
+
+
+var offset = Vector2()
+
+
+var modulate_color : Color
+
+func _ready() -> void:
+	# Set the node_a to a static body without a collision, we only need it for the pin effect.
+	mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	# Enable input pickable on the rigid body to be able to detect mouse clicks
+	rigid_body_2d.input_pickable = true
+
+
+func _physics_process(delta: float) -> void:
+	mouse_pin.global_position = get_global_mouse_position()
+
+
+func _process(delta: float) -> void:
+	# If we aren't dragging and a mouse button press happens then
+	if not is_dragging :
+		rigid_body_2d.freeze = true
+		# Clear the node_b path
+		mouse_pin.node_b = NodePath()
+		# Reset the angular damp to 0
+		rigid_body_2d.angular_damp = 0
+		# Or unlock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = false
+	else:
+		if not is_mouse_inside:
+			is_dragging = false
+			
+		#rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			
+		rigid_body_2d.freeze = false
+		# Set the node_b to the rigid body that triggered this input event
+		mouse_pin.node_b = mouse_pin.get_path_to(rigid_body_2d)
+		# Up the angular damp to avoid rotating like crazy when moving the mouse
+		rigid_body_2d.angular_damp = 10
+		# You can also lock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = true
+
+		print (\"drawing\")
+		click_pos.append($Sharpie2/RigidBody2D/Paint.global_position)
+		queue_redraw()
+		
+
+func _draw():
+	modulate_color.r = 1
+	modulate_color.g = 0
+	modulate_color.b = 0
+	modulate_color.a = 1
+	var count = 0 
+	for point in click_pos:
+		print (count)
+		count += 1
+		if count <= 50:
+			draw_circle(point,30,modulate_color)
+		else:
+			draw_circle(point,30,modulate_color)
+			modulate_color.a -= 0.01
+			if modulate_color.a <= 0:
+				$Hud/HudButtons/Next.visible = true
+				
+				
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	is_dragging = true
+
+
+func _on_button_button_up():
+	is_dragging = false
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_u04df"]
+shader = ExtResource("2_q5ciu")
+shader_parameter/holeCenter = null
+shader_parameter/holeRadius = null
+shader_parameter/penumbra = 20.0
+
+[sub_resource type="GDScript" id="GDScript_1bks5"]
+script/source = "extends Node2D
+#
+#@onready var lines : Node2D = $\".\"
+#
+#var pressed = false
+#var current_line :Line2D
+#
+#func _input(event: InputEvent) :
+	#if event is InputEventMouseButton:
+		#pressed = event.pressed
+		#if pressed:
+			#print(pressed)
+			#current_line = Line2D.new()
+			#current_line.default_color = Color.RED
+			#current_line.width = 20
+			#lines.add_child(current_line)
+			#
+	#if event is InputEventMouseMotion and pressed:
+		#print(event.position)
+		#current_line.add_point(event.position)
+"
+
+[sub_resource type="GDScript" id="GDScript_erula"]
+script/source = "extends Node2D
+#
+#
+#@onready var mouse_pin: PinJoint2D = $RigidBody2D/MousePin
+#@onready var fake_body: StaticBody2D = $RigidBody2D/MousePin/FakeBody
+#@onready var rigid_body_2d: RigidBody2D = $RigidBody2D
+#
+#var click_pos: Array = []
+#var current_line :Line2D
+#@onready var lines : Node2D = $\".\"
+#
+#const max_speed = 500
+#var is_dragging = false
+#var is_mouse_inside = true
+#
+#
+#var offset = Vector2()
+#
+#
+#var modulate_color : Color
+#
+#func _ready() -> void:
+	## Set the node_a to a static body without a collision, we only need it for the pin effect.
+	#mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	## Enable input pickable on the rigid body to be able to detect mouse clicks
+	#rigid_body_2d.input_pickable = true
+#
+#
+#func _physics_process(delta: float) -> void:
+	#mouse_pin.global_position = get_global_mouse_position()
+#
+#
+#func _process(delta: float) -> void:
+	## If we aren't dragging and a mouse button press happens then
+	#if not is_dragging :
+		#rigid_body_2d.freeze = true
+		## Clear the node_b path
+		#mouse_pin.node_b = NodePath()
+		## Reset the angular damp to 0
+		#rigid_body_2d.angular_damp = 0
+		## Or unlock the rotation of the rigid body with
+##		rigid_body_2d.lock_rotation = false
+	#else:
+		#if not is_mouse_inside:
+			#is_dragging = false
+			#
+		##rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			#
+		#rigid_body_2d.freeze = false
+		## Set the node_b to the rigid body that triggered this input event
+		#mouse_pin.node_b = mouse_pin.get_path_to(rigid_body_2d)
+		## Up the angular damp to avoid rotating like crazy when moving the mouse
+		#rigid_body_2d.angular_damp = 10
+		## You can also lock the rotation of the rigid body with
+##		rigid_body_2d.lock_rotation = true
+#
+		#print (\"drawing\")
+		#click_pos.append($RigidBody2D/Paint.global_position)
+		#queue_redraw()
+		#
+#
+#func _draw():
+	#modulate_color.r = 1
+	#modulate_color.g = 0
+	#modulate_color.b = 0
+	#modulate_color.a = 1
+	#var count = 0 
+	#for point in click_pos:
+		#print (count)
+		#count += 1
+		#if count <= 50:
+			#draw_circle(point,30,modulate_color)
+		#else:
+			#draw_circle(point,30,modulate_color)
+			#modulate_color.a -= 0.01
+			#if modulate_color.a <= 0:
+				#$Hud/HudButtons/Next.visible = true
+				#
+				#
+#func _notification(blah):
+	#match blah:
+		#NOTIFICATION_WM_MOUSE_EXIT:
+			#is_mouse_inside = false
+		#NOTIFICATION_WM_MOUSE_ENTER:
+			#is_mouse_inside = true
+			#
+#func _on_button_button_down():
+	#is_dragging = true
+#
+#
+#func _on_button_button_up():
+	#is_dragging = false
+"
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ecc7f"]
+friction = 12.2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_c2lkg"]
+shader = ExtResource("3_5c3u3")
+
+[node name="scene_coloring" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_ac1a0")
+
+[node name="BG" parent="." instance=ExtResource("1_xp0co")]
+show_behind_parent = true
+layout_mode = 1
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(4.51857, 4.49003)
+
+[node name="ColorRect2" type="ColorRect" parent="Control"]
+material = SubResource("ShaderMaterial_u04df")
+layout_mode = 0
+offset_left = -2.21309
+offset_top = -8.24049
+offset_right = 37.7869
+offset_bottom = 31.7595
+scale = Vector2(1, 2.58574)
+
+[node name="ColorRect3" type="ColorRect" parent="Control"]
+material = SubResource("ShaderMaterial_u04df")
+layout_mode = 0
+offset_left = 103.573
+offset_top = -11.5812
+offset_right = 143.573
+offset_bottom = 28.4188
+scale = Vector2(1, 2.58574)
+
+[node name="ColorRect4" type="ColorRect" parent="Control"]
+material = SubResource("ShaderMaterial_u04df")
+layout_mode = 0
+offset_left = 20.1391
+offset_top = -75.9461
+offset_right = 60.1391
+offset_bottom = -35.9461
+scale = Vector2(2.46064, 2.46992)
+
+[node name="ColorRect5" type="ColorRect" parent="Control"]
+material = SubResource("ShaderMaterial_u04df")
+layout_mode = 0
+offset_left = 22.5735
+offset_top = 58.5743
+offset_right = 62.5735
+offset_bottom = 98.5743
+scale = Vector2(2.46064, 2.46992)
+
+[node name="Lines" type="Node2D" parent="."]
+position = Vector2(212, 75)
+scale = Vector2(4.51857e-05, 4.49003e-05)
+script = SubResource("GDScript_1bks5")
+
+[node name="Sharpie2" type="Node2D" parent="."]
+position = Vector2(474, 233)
+rotation = 0.267529
+script = SubResource("GDScript_erula")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="Sharpie2"]
+physics_material_override = SubResource("PhysicsMaterial_ecc7f")
+gravity_scale = 0.0
+can_sleep = false
+
+[node name="Sharpie" type="Sprite2D" parent="Sharpie2/RigidBody2D"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_c2lkg")
+position = Vector2(7, -75)
+scale = Vector2(0.630286, 0.630286)
+texture = ExtResource("3_1anh2")
+
+[node name="Paint" type="Node2D" parent="Sharpie2/RigidBody2D"]
+position = Vector2(3, 3)
+
+[node name="Button" type="Button" parent="Sharpie2/RigidBody2D"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -7.0
+offset_top = -156.0
+offset_right = 1.0
+offset_bottom = -148.0
+scale = Vector2(2.5077, 20.3463)
+
+[node name="MousePin" type="PinJoint2D" parent="Sharpie2/RigidBody2D"]
+position = Vector2(3, 3)
+node_a = NodePath("..")
+node_b = NodePath("FakeBody")
+
+[node name="FakeBody" type="StaticBody2D" parent="Sharpie2/RigidBody2D/MousePin"]
+
+[node name="Hud" parent="." instance=ExtResource("4_pxjbv")]
+layout_mode = 1
+
+[connection signal="button_down" from="Sharpie2/RigidBody2D/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="Sharpie2/RigidBody2D/Button" to="Sharpie2" method="_on_button_button_down"]
+[connection signal="button_up" from="Sharpie2/RigidBody2D/Button" to="." method="_on_button_button_up"]
+[connection signal="button_up" from="Sharpie2/RigidBody2D/Button" to="Sharpie2" method="_on_button_button_up"]

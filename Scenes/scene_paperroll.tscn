@@ -1,0 +1,81 @@
+[gd_scene load_steps=11 format=3 uid="uid://cy76xuw25c7sa"]
+
+[ext_resource type="PackedScene" uid="uid://ryvkkr701wml" path="res://Scenes/BG.tscn" id="1_j0acq"]
+[ext_resource type="Material" uid="uid://6y43sq8kn8cj" path="res://Shader/pixel_shader_material.tres" id="2_hev5i"]
+[ext_resource type="Texture2D" uid="uid://down61jhfyj2i" path="res://Sprites/Scenes/Scene 1/Paper Roll.png" id="3_l0cnp"]
+[ext_resource type="Texture2D" uid="uid://dfn6mmucgqceg" path="res://Sprites/Scenes/Scene 1/Unbroken Paper.png" id="4_hegc7"]
+[ext_resource type="Texture2D" uid="uid://dwgttff05j5lg" path="res://Sprites/Scenes/Scene 1/Paper.png" id="5_870jr"]
+[ext_resource type="Texture2D" uid="uid://d0gminb1w0rw3" path="res://Sprites/Scenes/Scene 1/Paper Broken.png" id="6_nvfnv"]
+[ext_resource type="Shader" path="res://Shader/pixel_shader_material.gdshader" id="7_0jbs6"]
+[ext_resource type="Texture2D" uid="uid://ddjtpq0uh0ke0" path="res://Sprites/Scenes/Scene 1/p[aperroll half.png" id="8_rrog2"]
+[ext_resource type="PackedScene" uid="uid://btom87k2ao2y2" path="res://Ui/hud.tscn" id="9_roacm"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_b0eta"]
+shader = ExtResource("7_0jbs6")
+
+[node name="scene_paperroll" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG" parent="." instance=ExtResource("1_j0acq")]
+layout_mode = 1
+offset_right = -640.0
+offset_bottom = -360.0
+
+[node name="PaperRoll2" type="Node2D" parent="."]
+position = Vector2(245, 225)
+scale = Vector2(0.80828, 0.80828)
+
+[node name="PaperRoll" type="Sprite2D" parent="PaperRoll2"]
+texture_filter = 2
+material = ExtResource("2_hev5i")
+texture = ExtResource("3_l0cnp")
+
+[node name="Pulled paper" type="Node2D" parent="PaperRoll2"]
+position = Vector2(269, 7)
+
+[node name="RigidBody2D" type="RigidBody2D" parent="PaperRoll2/Pulled paper"]
+position = Vector2(-236.833, -7)
+
+[node name="UnbrokenPaper" type="Sprite2D" parent="PaperRoll2/Pulled paper/RigidBody2D"]
+texture_filter = 2
+material = ExtResource("2_hev5i")
+texture = ExtResource("4_hegc7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PaperRoll2/Pulled paper/RigidBody2D"]
+
+[node name="RigidBody2D2" type="RigidBody2D" parent="PaperRoll2/Pulled paper"]
+position = Vector2(-153.941, 11.5579)
+
+[node name="Paper" type="Sprite2D" parent="PaperRoll2/Pulled paper/RigidBody2D2"]
+texture_filter = 2
+material = ExtResource("2_hev5i")
+texture = ExtResource("5_870jr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PaperRoll2/Pulled paper/RigidBody2D2"]
+
+[node name="RigidBody2D3" type="RigidBody2D" parent="PaperRoll2/Pulled paper"]
+position = Vector2(-151.466, 18.9811)
+
+[node name="PaperBroken" type="Sprite2D" parent="PaperRoll2/Pulled paper/RigidBody2D3"]
+texture_filter = 2
+material = ExtResource("2_hev5i")
+texture = ExtResource("6_nvfnv")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PaperRoll2/Pulled paper/RigidBody2D3"]
+
+[node name="P[aperrollHalf" type="Sprite2D" parent="."]
+texture_filter = 2
+material = SubResource("ShaderMaterial_b0eta")
+position = Vector2(245, 225)
+scale = Vector2(0.80828, 0.80828)
+texture = ExtResource("8_rrog2")
+
+[node name="Hud" parent="." instance=ExtResource("9_roacm")]
+layout_mode = 1
+offset_right = -640.0
+offset_bottom = -360.0

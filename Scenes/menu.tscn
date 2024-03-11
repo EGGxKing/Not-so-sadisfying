@@ -1,0 +1,430 @@
+[gd_scene load_steps=19 format=3 uid="uid://byjtlttg613ul"]
+
+[ext_resource type="Material" uid="uid://6y43sq8kn8cj" path="res://Shader/pixel_shader_material.tres" id="1_kmrnh"]
+[ext_resource type="PackedScene" uid="uid://ryvkkr701wml" path="res://Scenes/BG.tscn" id="1_tl6dr"]
+[ext_resource type="Script" path="res://Scenes/menu.gd" id="1_vysm5"]
+[ext_resource type="Texture2D" uid="uid://1q855ywucyfv" path="res://Sprites/Ui/Bar .png" id="2_f0ykx"]
+[ext_resource type="PackedScene" uid="uid://1i3r7bf3ue1r" path="res://Ui/bubbles.tscn" id="2_oafye"]
+[ext_resource type="FontFile" uid="uid://ccuf3hypfwj14" path="res://Assets/Fonts/return-of-ganon/retganon.ttf" id="3_fiycn"]
+[ext_resource type="Texture2D" uid="uid://bisa2qlqt8nis" path="res://Sprites/Ui/Bar Hobored.png" id="3_un4a1"]
+[ext_resource type="PackedScene" uid="uid://c6m28e0jmerpg" path="res://Ui/scene_select.tscn" id="7_1md8i"]
+[ext_resource type="Shader" path="res://Shader/pixel_shader_material.gdshader" id="8_h0khf"]
+[ext_resource type="Script" path="res://Ui/Quit.gd" id="8_pvm8o"]
+[ext_resource type="PackedScene" uid="uid://c3qwqomgsm0rk" path="res://Scenes/sound_slider.tscn" id="9_jq776"]
+
+[sub_resource type="GDScript" id="GDScript_cfcma"]
+resource_name = "Start_Btn"
+script/source = "extends Control
+
+
+func _on_button_mouse_entered():
+	$BarHobored.visible = true
+
+
+func _on_button_mouse_exited():
+	$BarHobored.visible = false
+
+
+func _on_button_pressed():
+	$\"../../Scene select\".visible = true
+	$\"..\".visible = false
+"
+
+[sub_resource type="GDScript" id="GDScript_fgb7m"]
+resource_name = "Opcions_Btn"
+script/source = "extends Control
+
+
+
+func _on_button_mouse_entered():
+	$BarHobored.visible = true
+
+
+func _on_button_mouse_exited():
+	$BarHobored.visible = false
+
+
+func _on_button_pressed():
+	$\"../../OpcionsMenuButtons\".visible = true
+	$\"..\".visible = false
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rh6ny"]
+shader = ExtResource("8_h0khf")
+
+[sub_resource type="GDScript" id="GDScript_agvlv"]
+resource_name = "SoundScript"
+script/source = "extends Control
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_abrbm"]
+shader = ExtResource("8_h0khf")
+
+[sub_resource type="GDScript" id="GDScript_a3ki7"]
+script/source = "extends Control
+
+
+
+
+func _on_check_button_toggled(toggled_on):
+	if toggled_on ==true :
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+"
+
+[sub_resource type="GDScript" id="GDScript_acc0q"]
+script/source = "extends Control
+
+
+func _on_button_mouse_entered():
+	$BarHobored.visible = true
+
+
+func _on_button_mouse_exited():
+	$BarHobored.visible = false
+
+
+func _on_button_pressed():
+	$\"..\".visible = false
+	$\"../../MianMenuButtons\".visible = true
+"
+
+[node name="Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vysm5")
+
+[node name="BG" parent="." instance=ExtResource("1_tl6dr")]
+layout_mode = 1
+
+[node name="Bubbles" parent="." instance=ExtResource("2_oafye")]
+layout_mode = 1
+offset_left = -11.0
+offset_top = -20.0
+offset_right = -11.0
+offset_bottom = -20.0
+
+[node name="MianMenuButtons" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Start" type="Control" parent="MianMenuButtons"]
+anchors_preset = 0
+offset_left = 309.0
+offset_top = 94.0
+offset_right = 349.0
+offset_bottom = 134.0
+script = SubResource("GDScript_cfcma")
+
+[node name="Bar" type="Sprite2D" parent="MianMenuButtons/Start"]
+texture_filter = 2
+material = ExtResource("1_kmrnh")
+scale = Vector2(1.52778, 1.7375)
+texture = ExtResource("2_f0ykx")
+
+[node name="BarHobored" type="Sprite2D" parent="MianMenuButtons/Start"]
+visible = false
+material = ExtResource("1_kmrnh")
+scale = Vector2(1.52778, 1.7375)
+texture = ExtResource("3_un4a1")
+
+[node name="Label" type="Label" parent="MianMenuButtons/Start"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.925
+anchor_top = 0.825
+anchor_right = 28.125
+anchor_bottom = 13.4
+offset_left = -136.0
+offset_top = -61.0
+offset_right = -96.0
+offset_bottom = -38.0
+scale = Vector2(0.1, 0.1)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_fiycn")
+theme_override_font_sizes/font_size = 600
+text = "Start"
+metadata/_edit_use_anchors_ = true
+
+[node name="Button" type="Button" parent="MianMenuButtons/Start"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -192.0
+offset_top = -42.0
+offset_right = -184.0
+offset_bottom = -34.0
+scale = Vector2(48.72, 10.24)
+mouse_default_cursor_shape = 2
+
+[node name="Opcions" type="Control" parent="MianMenuButtons"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 309.0
+offset_top = 182.0
+offset_right = 349.0
+offset_bottom = 222.0
+scale = Vector2(0.9, 0.9)
+script = SubResource("GDScript_fgb7m")
+
+[node name="Bar" type="Sprite2D" parent="MianMenuButtons/Opcions"]
+texture_filter = 2
+material = ExtResource("1_kmrnh")
+scale = Vector2(1.52778, 1.7375)
+texture = ExtResource("2_f0ykx")
+
+[node name="BarHobored" type="Sprite2D" parent="MianMenuButtons/Opcions"]
+visible = false
+material = ExtResource("1_kmrnh")
+scale = Vector2(1.52778, 1.7375)
+texture = ExtResource("3_un4a1")
+
+[node name="Label" type="Label" parent="MianMenuButtons/Opcions"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.95
+anchor_top = 0.8
+anchor_right = 36.525
+anchor_bottom = 13.375
+offset_left = -97.0
+offset_top = -60.0
+offset_right = -57.0
+offset_bottom = -37.0
+scale = Vector2(0.1, 0.1)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_fiycn")
+theme_override_font_sizes/font_size = 600
+text = "Opcions"
+metadata/_edit_use_anchors_ = true
+
+[node name="Button" type="Button" parent="MianMenuButtons/Opcions"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -192.0
+offset_top = -42.0
+offset_right = -184.0
+offset_bottom = -34.0
+scale = Vector2(48.72, 10.24)
+mouse_default_cursor_shape = 2
+
+[node name="Quit" type="Control" parent="MianMenuButtons"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 308.0
+offset_top = 292.5
+offset_right = 348.0
+offset_bottom = 332.5
+scale = Vector2(1.32931, 1.32931)
+script = ExtResource("8_pvm8o")
+
+[node name="Bar" type="Sprite2D" parent="MianMenuButtons/Quit"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_rh6ny")
+texture = ExtResource("2_f0ykx")
+
+[node name="BarHobored" type="Sprite2D" parent="MianMenuButtons/Quit"]
+visible = false
+texture_filter = 2
+material = SubResource("ShaderMaterial_rh6ny")
+texture = ExtResource("3_un4a1")
+
+[node name="Label" type="Label" parent="MianMenuButtons/Quit"]
+layout_mode = 0
+offset_left = -27.5
+offset_top = -17.3333
+offset_right = 1632.5
+offset_bottom = 664.667
+scale = Vector2(0.0795583, 0.0795583)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_fiycn")
+theme_override_font_sizes/font_size = 500
+text = "Quit"
+
+[node name="Button" type="Button" parent="MianMenuButtons/Quit"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -127.333
+offset_top = -24.0
+offset_right = -119.333
+offset_bottom = -16.0
+scale = Vector2(31.8711, 5.95331)
+
+[node name="OpcionsMenuButtons" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Sound2" type="Control" parent="OpcionsMenuButtons"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 298.0
+offset_top = 102.0
+offset_right = 338.0
+offset_bottom = 142.0
+scale = Vector2(1.2, 1.2)
+script = SubResource("GDScript_agvlv")
+
+[node name="Bar" type="Sprite2D" parent="OpcionsMenuButtons/Sound2"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_abrbm")
+texture = ExtResource("2_f0ykx")
+
+[node name="Button" type="Button" parent="OpcionsMenuButtons/Sound2"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -127.333
+offset_top = -24.0
+offset_right = -119.333
+offset_bottom = -16.0
+scale = Vector2(31.8711, 5.95331)
+mouse_default_cursor_shape = 2
+
+[node name="Label" type="Label" parent="OpcionsMenuButtons/Sound2"]
+layout_mode = 2
+offset_left = -33.3333
+offset_top = -20.0
+offset_right = 1062.67
+offset_bottom = 419.0
+scale = Vector2(0.0563872, 0.0563872)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_fiycn")
+theme_override_font_sizes/font_size = 500
+text = "Volume"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="OpcionsMenuButtons/Sound2"]
+layout_mode = 0
+offset_left = -123.333
+offset_top = 9.16667
+offset_right = 972.667
+offset_bottom = 468.167
+scale = Vector2(0.223036, 0.635852)
+
+[node name="HSlider" parent="OpcionsMenuButtons/Sound2/VBoxContainer" instance=ExtResource("9_jq776")]
+layout_mode = 2
+
+[node name="Fulllscreen" type="Control" parent="OpcionsMenuButtons"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 297.0
+offset_top = 172.0
+offset_right = 337.0
+offset_bottom = 212.0
+scale = Vector2(1.2, 1.2)
+script = SubResource("GDScript_a3ki7")
+
+[node name="Bar" type="Sprite2D" parent="OpcionsMenuButtons/Fulllscreen"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_abrbm")
+texture = ExtResource("2_f0ykx")
+
+[node name="CheckButton" type="CheckButton" parent="OpcionsMenuButtons/Fulllscreen"]
+self_modulate = Color(1, 1, 1, 0)
+texture_filter = 2
+material = ExtResource("1_kmrnh")
+layout_mode = 0
+offset_left = 52.5
+offset_top = -13.3333
+offset_right = 96.5
+offset_bottom = 10.6667
+scale = Vector2(1.13799, 1.24055)
+mouse_default_cursor_shape = 2
+theme_override_colors/font_hover_pressed_color = Color(0, 0, 0, 0)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0)
+flat = true
+
+[node name="Label" type="Label" parent="OpcionsMenuButtons/Fulllscreen"]
+layout_mode = 0
+offset_left = -92.5
+offset_top = -17.3333
+offset_right = 1567.5
+offset_bottom = 664.667
+scale = Vector2(0.0795583, 0.0795583)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_fiycn")
+theme_override_font_sizes/font_size = 500
+text = "Fullscreen
+"
+
+[node name="Back" type="Control" parent="OpcionsMenuButtons"]
+anchors_preset = 0
+offset_left = 297.0
+offset_top = 284.0
+offset_right = 337.0
+offset_bottom = 324.0
+scale = Vector2(1.2, 1.2)
+script = SubResource("GDScript_acc0q")
+
+[node name="Bar" type="Sprite2D" parent="OpcionsMenuButtons/Back"]
+texture_filter = 2
+material = ExtResource("1_kmrnh")
+texture = ExtResource("2_f0ykx")
+
+[node name="BarHobored" type="Sprite2D" parent="OpcionsMenuButtons/Back"]
+visible = false
+material = ExtResource("1_kmrnh")
+texture = ExtResource("3_un4a1")
+
+[node name="Label" type="Label" parent="OpcionsMenuButtons/Back"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 2.53889
+anchor_top = 1.025
+anchor_right = 28.7389
+anchor_bottom = 13.6
+offset_left = -136.0
+offset_top = -61.0
+offset_right = -96.0
+offset_bottom = -38.0
+scale = Vector2(0.0769439, 0.0769439)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_fiycn")
+theme_override_font_sizes/font_size = 600
+text = "Back"
+metadata/_edit_use_anchors_ = true
+
+[node name="Button" type="Button" parent="OpcionsMenuButtons/Back"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -192.0
+offset_top = -42.0
+offset_right = -184.0
+offset_bottom = -34.0
+scale = Vector2(48.72, 10.24)
+mouse_default_cursor_shape = 2
+
+[node name="Scene select" parent="." instance=ExtResource("7_1md8i")]
+visible = false
+layout_mode = 1
+
+[connection signal="mouse_entered" from="MianMenuButtons/Start/Button" to="MianMenuButtons/Start" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="MianMenuButtons/Start/Button" to="MianMenuButtons/Start" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="MianMenuButtons/Start/Button" to="MianMenuButtons/Start" method="_on_button_pressed"]
+[connection signal="mouse_entered" from="MianMenuButtons/Opcions/Button" to="MianMenuButtons/Opcions" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="MianMenuButtons/Opcions/Button" to="MianMenuButtons/Opcions" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="MianMenuButtons/Opcions/Button" to="MianMenuButtons/Opcions" method="_on_button_pressed"]
+[connection signal="button_down" from="MianMenuButtons/Quit/Button" to="MianMenuButtons/Quit" method="_on_button_button_down"]
+[connection signal="mouse_entered" from="MianMenuButtons/Quit/Button" to="MianMenuButtons/Quit" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="MianMenuButtons/Quit/Button" to="MianMenuButtons/Quit" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="OpcionsMenuButtons/Fulllscreen/CheckButton" to="OpcionsMenuButtons/Fulllscreen" method="_on_check_button_pressed"]
+[connection signal="toggled" from="OpcionsMenuButtons/Fulllscreen/CheckButton" to="OpcionsMenuButtons/Fulllscreen" method="_on_check_button_toggled"]
+[connection signal="mouse_entered" from="OpcionsMenuButtons/Back/Button" to="OpcionsMenuButtons/Back" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="OpcionsMenuButtons/Back/Button" to="OpcionsMenuButtons/Back" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="OpcionsMenuButtons/Back/Button" to="OpcionsMenuButtons/Back" method="_on_button_pressed"]

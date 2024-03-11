@@ -1,0 +1,330 @@
+[gd_scene load_steps=9 format=3 uid="uid://7q3oqcl41l87"]
+
+[ext_resource type="PackedScene" uid="uid://ryvkkr701wml" path="res://Scenes/BG.tscn" id="1_5a0o1"]
+[ext_resource type="Material" uid="uid://6y43sq8kn8cj" path="res://Shader/pixel_shader_material.tres" id="2_ime7f"]
+[ext_resource type="Texture2D" uid="uid://brqw8afhk28ca" path="res://Sprites/Scenes/Scene 8/Wrecking ball.png" id="3_qmbea"]
+[ext_resource type="PackedScene" uid="uid://btom87k2ao2y2" path="res://Ui/hud.tscn" id="4_1fv0q"]
+
+[sub_resource type="GDScript" id="GDScript_lw361"]
+script/source = "extends Control
+
+var ball_count = 0
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	$Ball/RigidBody2D.linear_velocity.x =  1.0 *70
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+
+
+func _on_button_button_up():
+	ball_count += 1
+	print(ball_count)
+	if ball_count >= 5:
+		$Hud/HudButtons/Next.visible = true
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j6gfi"]
+size = Vector2(640, 217)
+
+[sub_resource type="GDScript" id="GDScript_q7s1r"]
+script/source = "extends Node2D
+
+
+@onready var mouse_pin: PinJoint2D = $RigidBody2D/PinJoint2D
+@onready var fake_body: StaticBody2D = $RigidBody2D/PinJoint2D/StaticBody2D
+@onready var rigid_body_2d: RigidBody2D = $RigidBody2D
+@onready var removeing_pin: PinJoint2D = $PinJoint2D
+
+
+var is_dragging = false
+var is_mouse_inside = true
+var  mose_movemnt = Vector2(0,0)
+
+func _ready() -> void:
+	# Set the node_a to a static body without a collision, we only need it for the pin effect.
+	mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	# Enable input pickable on the rigid body to be able to detect mouse clicks
+	rigid_body_2d.input_pickable = true
+
+
+
+
+func _process(delta: float) -> void:
+	# If we aren't dragging and a mouse button press happens then
+	if not is_dragging :
+		#rigid_body_2d.freeze = true
+		# Clear the node_b path
+		mouse_pin.node_b = NodePath()
+		# Reset the angular damp to 0
+		rigid_body_2d.angular_damp = 0
+		# Or unlock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = false
+	else:
+		if not is_mouse_inside:
+			is_dragging = false
+		
+		$RigidBody2D.linear_velocity.x =  mose_movemnt.x *70
+		#rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			
+		rigid_body_2d.freeze = false
+		# You can also lock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = true
+
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	is_dragging = true
+
+func _on_button_button_up():
+	is_dragging = false
+	removeing_pin.queue_free() 
+
+func _input(event):
+	if is_dragging == true:
+		if event is InputEventMouseMotion:
+			mose_movemnt = event.relative
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lk6ke"]
+radius = 24.0416
+
+[node name="scene_balls" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_lw361")
+
+[node name="BG" parent="." instance=ExtResource("1_5a0o1")]
+layout_mode = 1
+offset_right = -640.0
+offset_bottom = -360.0
+
+[node name="Top" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Top"]
+position = Vector2(321, -108)
+shape = SubResource("RectangleShape2D_j6gfi")
+
+[node name="Ball5" type="Node2D" parent="."]
+position = Vector2(286, 125)
+script = SubResource("GDScript_q7s1r")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="Ball5"]
+position = Vector2(-28, -127)
+node_a = NodePath("../../Top")
+node_b = NodePath("../RigidBody2D")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="Ball5"]
+input_pickable = true
+mass = 5.81
+gravity_scale = 1.655
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball5/RigidBody2D"]
+position = Vector2(-28, 65)
+shape = SubResource("CircleShape2D_lk6ke")
+
+[node name="Button" type="Button" parent="Ball5/RigidBody2D"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -52.0
+offset_top = 41.0
+offset_right = -44.0
+offset_bottom = 49.0
+scale = Vector2(6.00836, 6.11277)
+mouse_default_cursor_shape = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="WreckingBall" type="Sprite2D" parent="Ball5/RigidBody2D"]
+texture_filter = 2
+material = ExtResource("2_ime7f")
+texture = ExtResource("3_qmbea")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="Ball5/RigidBody2D"]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Ball5/RigidBody2D/PinJoint2D"]
+
+[node name="Ball4" type="Node2D" parent="."]
+position = Vector2(404, 125)
+script = SubResource("GDScript_q7s1r")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="Ball4"]
+position = Vector2(-28, -127)
+node_a = NodePath("../../Top")
+node_b = NodePath("../RigidBody2D")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="Ball4"]
+input_pickable = true
+mass = 5.81
+gravity_scale = 1.655
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball4/RigidBody2D"]
+position = Vector2(-28, 65)
+shape = SubResource("CircleShape2D_lk6ke")
+
+[node name="Button" type="Button" parent="Ball4/RigidBody2D"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -52.0
+offset_top = 41.0
+offset_right = -44.0
+offset_bottom = 49.0
+scale = Vector2(6.00836, 6.11277)
+mouse_default_cursor_shape = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="WreckingBall" type="Sprite2D" parent="Ball4/RigidBody2D"]
+texture_filter = 2
+material = ExtResource("2_ime7f")
+texture = ExtResource("3_qmbea")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="Ball4/RigidBody2D"]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Ball4/RigidBody2D/PinJoint2D"]
+
+[node name="Ball3" type="Node2D" parent="."]
+position = Vector2(227, 125)
+script = SubResource("GDScript_q7s1r")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="Ball3"]
+position = Vector2(-28, -127)
+node_a = NodePath("../../Top")
+node_b = NodePath("../RigidBody2D")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="Ball3"]
+input_pickable = true
+mass = 5.81
+gravity_scale = 1.655
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball3/RigidBody2D"]
+position = Vector2(-28, 65)
+shape = SubResource("CircleShape2D_lk6ke")
+
+[node name="Button" type="Button" parent="Ball3/RigidBody2D"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -52.0
+offset_top = 41.0
+offset_right = -44.0
+offset_bottom = 49.0
+scale = Vector2(6.00836, 6.11277)
+mouse_default_cursor_shape = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="WreckingBall" type="Sprite2D" parent="Ball3/RigidBody2D"]
+texture_filter = 2
+material = ExtResource("2_ime7f")
+texture = ExtResource("3_qmbea")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="Ball3/RigidBody2D"]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Ball3/RigidBody2D/PinJoint2D"]
+
+[node name="Ball2" type="Node2D" parent="."]
+position = Vector2(345, 125)
+script = SubResource("GDScript_q7s1r")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="Ball2"]
+position = Vector2(-28, -127)
+node_a = NodePath("../../Top")
+node_b = NodePath("../RigidBody2D")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="Ball2"]
+input_pickable = true
+mass = 5.81
+gravity_scale = 1.655
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball2/RigidBody2D"]
+position = Vector2(-28, 65)
+shape = SubResource("CircleShape2D_lk6ke")
+
+[node name="Button" type="Button" parent="Ball2/RigidBody2D"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -52.0
+offset_top = 41.0
+offset_right = -44.0
+offset_bottom = 49.0
+scale = Vector2(6.00836, 6.11277)
+mouse_default_cursor_shape = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="WreckingBall" type="Sprite2D" parent="Ball2/RigidBody2D"]
+texture_filter = 2
+material = ExtResource("2_ime7f")
+texture = ExtResource("3_qmbea")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="Ball2/RigidBody2D"]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Ball2/RigidBody2D/PinJoint2D"]
+
+[node name="Ball" type="Node2D" parent="."]
+position = Vector2(462, 125)
+script = SubResource("GDScript_q7s1r")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="Ball"]
+position = Vector2(-28, -127)
+node_a = NodePath("../../Top")
+node_b = NodePath("../RigidBody2D")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="Ball"]
+input_pickable = true
+mass = 5.81
+gravity_scale = 1.655
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball/RigidBody2D"]
+position = Vector2(-28, 65)
+shape = SubResource("CircleShape2D_lk6ke")
+
+[node name="Button" type="Button" parent="Ball/RigidBody2D"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -52.0
+offset_top = 41.0
+offset_right = -44.0
+offset_bottom = 49.0
+scale = Vector2(6.00836, 6.11277)
+mouse_default_cursor_shape = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="WreckingBall" type="Sprite2D" parent="Ball/RigidBody2D"]
+texture_filter = 2
+material = ExtResource("2_ime7f")
+texture = ExtResource("3_qmbea")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="Ball/RigidBody2D"]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Ball/RigidBody2D/PinJoint2D"]
+
+[node name="Hud" parent="." instance=ExtResource("4_1fv0q")]
+layout_mode = 1
+offset_right = -640.0
+offset_bottom = -360.0
+
+[connection signal="button_down" from="Ball5/RigidBody2D/Button" to="Ball5" method="_on_button_button_down"]
+[connection signal="button_up" from="Ball5/RigidBody2D/Button" to="." method="_on_button_button_up"]
+[connection signal="button_up" from="Ball5/RigidBody2D/Button" to="Ball5" method="_on_button_button_up"]
+[connection signal="button_down" from="Ball4/RigidBody2D/Button" to="Ball4" method="_on_button_button_down"]
+[connection signal="button_up" from="Ball4/RigidBody2D/Button" to="." method="_on_button_button_up"]
+[connection signal="button_up" from="Ball4/RigidBody2D/Button" to="Ball4" method="_on_button_button_up"]
+[connection signal="button_down" from="Ball3/RigidBody2D/Button" to="Ball3" method="_on_button_button_down"]
+[connection signal="button_up" from="Ball3/RigidBody2D/Button" to="." method="_on_button_button_up"]
+[connection signal="button_up" from="Ball3/RigidBody2D/Button" to="Ball3" method="_on_button_button_up"]
+[connection signal="button_down" from="Ball2/RigidBody2D/Button" to="Ball2" method="_on_button_button_down"]
+[connection signal="button_up" from="Ball2/RigidBody2D/Button" to="." method="_on_button_button_up"]
+[connection signal="button_up" from="Ball2/RigidBody2D/Button" to="Ball2" method="_on_button_button_up"]
+[connection signal="button_down" from="Ball/RigidBody2D/Button" to="Ball" method="_on_button_button_down"]
+[connection signal="button_up" from="Ball/RigidBody2D/Button" to="." method="_on_button_button_up"]
+[connection signal="button_up" from="Ball/RigidBody2D/Button" to="Ball" method="_on_button_button_up"]

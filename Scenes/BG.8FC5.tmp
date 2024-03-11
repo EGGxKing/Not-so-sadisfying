@@ -1,0 +1,56 @@
+[gd_scene load_steps=3 format=3 uid="uid://ryvkkr701wml"]
+
+[sub_resource type="Theme" id="Theme_3hpc8"]
+
+[sub_resource type="GDScript" id="GDScript_c7b3i"]
+resource_name = "BG"
+script/source = "extends Control
+
+const max_colour = 235
+var random_R = RandomNumberGenerator.new()
+var random_G = RandomNumberGenerator.new()
+var random_B = RandomNumberGenerator.new()
+
+var time_start = 0
+var time_now = 0
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	time_now = OS.get_unix_time()
+	var time_elapsed = time_now - time_start
+	print(time_elapsed)
+	change_colour(delta)
+
+
+func change_colour(delta):
+	var tween = get_tree().create_tween()
+	var modulate_color : Color
+	modulate_color.r = random_R.randi_range(max_colour, 255)
+	modulate_color.g =random_G.randi_range(max_colour, 255)
+	modulate_color.b =random_B.randi_range(max_colour, 255)
+	modulate_color.a = 255
+	
+	print (modulate_color)
+	
+	tween.tween_property($ColorRect, 'modulate', modulate_color, 5)
+"
+
+[node name="BG" type="Control"]
+modulate = Color(1, 0.921569, 1, 1)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_3hpc8")
+script = SubResource("GDScript_c7b3i")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = -18.0
+offset_top = -16.0
+offset_right = 22.0
+offset_bottom = 24.0
+scale = Vector2(16.8409, 9.84091)

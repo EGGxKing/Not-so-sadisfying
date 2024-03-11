@@ -1,0 +1,1195 @@
+[gd_scene load_steps=32 format=3 uid="uid://dy8nvxkt7xnrf"]
+
+[ext_resource type="PackedScene" uid="uid://ryvkkr701wml" path="res://Scenes/BG.tscn" id="1_0lut7"]
+[ext_resource type="Shader" path="res://Shader/pixel_shader_material.gdshader" id="1_nlek3"]
+[ext_resource type="Texture2D" uid="uid://dumhndk17cvir" path="res://Sprites/Scenes/Scene 7/EggHolder.png" id="2_4l5aa"]
+[ext_resource type="Texture2D" uid="uid://bqwi2un0v2be5" path="res://Sprites/Scenes/Scene 7/Egg.png" id="3_bj43a"]
+[ext_resource type="Texture2D" uid="uid://bkihwn71345aw" path="res://Sprites/Scenes/Scene 7/EggShell1.png" id="3_n8i8y"]
+[ext_resource type="Texture2D" uid="uid://mc5j40gmffw7" path="res://Sprites/Scenes/Scene 7/EggShell2.png" id="4_bb7nq"]
+[ext_resource type="Texture2D" uid="uid://b42bub7vsjcoy" path="res://Sprites/Scenes/Scene 7/EggShell3.png" id="5_ah818"]
+[ext_resource type="Texture2D" uid="uid://dhcg40jokffca" path="res://Sprites/Scenes/Scene 7/EggShell4.png" id="6_5c6kf"]
+[ext_resource type="Texture2D" uid="uid://bo12qcii8vy5e" path="res://Sprites/Scenes/Scene 7/EggShell5.png" id="7_e7mki"]
+[ext_resource type="Texture2D" uid="uid://jn5lo2gu28au" path="res://Sprites/Scenes/Scene 7/EggShell6.png" id="8_8ipg7"]
+[ext_resource type="Texture2D" uid="uid://nnapo6cs50ph" path="res://Sprites/Scenes/Scene 7/EggShell7.png" id="9_0jdhe"]
+[ext_resource type="Texture2D" uid="uid://c5dfjl8ebnbml" path="res://Sprites/Scenes/Scene 7/EggShell8.png" id="10_ip1g0"]
+[ext_resource type="Texture2D" uid="uid://bs2iqqmg5qtfl" path="res://Sprites/Scenes/Scene 7/EggShell9.png" id="11_0dvdw"]
+[ext_resource type="Texture2D" uid="uid://bnv362jhvr7hh" path="res://Sprites/Scenes/Scene 7/EggShell10.png" id="12_aq1kl"]
+[ext_resource type="Texture2D" uid="uid://dmlnm8m7tijth" path="res://Sprites/Scenes/Scene 7/EggShell11.png" id="13_6qm8l"]
+[ext_resource type="PackedScene" uid="uid://btom87k2ao2y2" path="res://Ui/hud.tscn" id="14_sywok"]
+
+[sub_resource type="GDScript" id="GDScript_eh1s3"]
+script/source = "extends Control
+
+var cont = 0
+
+func _on_button_button_down():
+	cont +=1
+	if cont == 11:
+		$Hud/HudButtons/Next.visible = true
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ffh1s"]
+size = Vector2(699, 65)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_a22u0"]
+shader = ExtResource("1_nlek3")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_b4rfd"]
+shader = ExtResource("1_nlek3")
+
+[sub_resource type="GDScript" id="GDScript_r7ntm"]
+script/source = "extends Node2D
+
+
+@onready var mouse_pin: PinJoint2D = $PinJoint2D
+@onready var fake_body: StaticBody2D = $PinJoint2D/StaticBody2D
+@onready var rigid_body_2d: RigidBody2D = $\".\"
+
+
+var is_dragging = false
+var is_mouse_inside = true
+
+
+func _ready() -> void:
+	# Set the node_a to a static body without a collision, we only need it for the pin effect.
+	mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	# Enable input pickable on the rigid body to be able to detect mouse clicks
+	rigid_body_2d.input_pickable = true
+
+
+func _physics_process(delta: float) -> void:
+	mouse_pin.global_position = get_global_mouse_position()
+
+
+func _process(delta: float) -> void:
+	# If we aren't dragging and a mouse button press happens then
+	if not is_dragging :
+		#rigid_body_2d.freeze = true
+		# Clear the node_b path
+		mouse_pin.node_b = NodePath()
+		# Reset the angular damp to 0
+		rigid_body_2d.angular_damp = 0
+		# Or unlock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = false
+	else:
+		if not is_mouse_inside:
+			is_dragging = false
+		
+		
+		#rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			
+		rigid_body_2d.freeze = false
+		# Set the node_b to the rigid body that triggered this input event
+		mouse_pin.node_b = mouse_pin.get_path_to(rigid_body_2d)
+		# Up the angular damp to avoid rotating like crazy when moving the mouse
+		rigid_body_2d.angular_damp = 10
+		# You can also lock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = true
+
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	is_dragging = true
+
+func _on_button_button_up():
+	is_dragging = false
+
+"
+
+[sub_resource type="GDScript" id="GDScript_1ecws"]
+script/source = "extends Node2D
+
+
+@onready var mouse_pin: PinJoint2D = $PinJoint2D
+@onready var fake_body: StaticBody2D = $PinJoint2D/StaticBody2D
+@onready var rigid_body_2d: RigidBody2D = $\".\"
+
+
+var is_dragging = false
+var is_mouse_inside = true
+
+
+func _ready() -> void:
+	# Set the node_a to a static body without a collision, we only need it for the pin effect.
+	mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	# Enable input pickable on the rigid body to be able to detect mouse clicks
+	rigid_body_2d.input_pickable = true
+
+
+func _physics_process(delta: float) -> void:
+	mouse_pin.global_position = get_global_mouse_position()
+
+
+func _process(delta: float) -> void:
+	# If we aren't dragging and a mouse button press happens then
+	if not is_dragging :
+		#rigid_body_2d.freeze = true
+		# Clear the node_b path
+		mouse_pin.node_b = NodePath()
+		# Reset the angular damp to 0
+		rigid_body_2d.angular_damp = 0
+		# Or unlock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = false
+	else:
+		if not is_mouse_inside:
+			is_dragging = false
+		
+		
+		#rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			
+		rigid_body_2d.freeze = false
+		# Set the node_b to the rigid body that triggered this input event
+		mouse_pin.node_b = mouse_pin.get_path_to(rigid_body_2d)
+		# Up the angular damp to avoid rotating like crazy when moving the mouse
+		rigid_body_2d.angular_damp = 10
+		# You can also lock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = true
+
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	is_dragging = true
+
+func _on_button_button_up():
+	is_dragging = false
+
+"
+
+[sub_resource type="GDScript" id="GDScript_qvxva"]
+script/source = "extends Node2D
+
+
+@onready var mouse_pin: PinJoint2D = $PinJoint2D
+@onready var fake_body: StaticBody2D = $PinJoint2D/StaticBody2D
+@onready var rigid_body_2d: RigidBody2D = $\".\"
+
+
+var is_dragging = false
+var is_mouse_inside = true
+
+
+func _ready() -> void:
+	# Set the node_a to a static body without a collision, we only need it for the pin effect.
+	mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	# Enable input pickable on the rigid body to be able to detect mouse clicks
+	rigid_body_2d.input_pickable = true
+
+
+func _physics_process(delta: float) -> void:
+	mouse_pin.global_position = get_global_mouse_position()
+
+
+func _process(delta: float) -> void:
+	# If we aren't dragging and a mouse button press happens then
+	if not is_dragging :
+		#rigid_body_2d.freeze = true
+		# Clear the node_b path
+		mouse_pin.node_b = NodePath()
+		# Reset the angular damp to 0
+		rigid_body_2d.angular_damp = 0
+		# Or unlock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = false
+	else:
+		if not is_mouse_inside:
+			is_dragging = false
+		
+		
+		#rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			
+		rigid_body_2d.freeze = false
+		# Set the node_b to the rigid body that triggered this input event
+		mouse_pin.node_b = mouse_pin.get_path_to(rigid_body_2d)
+		# Up the angular damp to avoid rotating like crazy when moving the mouse
+		rigid_body_2d.angular_damp = 10
+		# You can also lock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = true
+
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	is_dragging = true
+
+func _on_button_button_up():
+	is_dragging = false
+
+"
+
+[sub_resource type="GDScript" id="GDScript_cears"]
+script/source = "extends Node2D
+
+
+@onready var mouse_pin: PinJoint2D = $PinJoint2D
+@onready var fake_body: StaticBody2D = $PinJoint2D/StaticBody2D
+@onready var rigid_body_2d: RigidBody2D = $\".\"
+
+
+var is_dragging = false
+var is_mouse_inside = true
+
+
+func _ready() -> void:
+	# Set the node_a to a static body without a collision, we only need it for the pin effect.
+	mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	# Enable input pickable on the rigid body to be able to detect mouse clicks
+	rigid_body_2d.input_pickable = true
+
+
+func _physics_process(delta: float) -> void:
+	mouse_pin.global_position = get_global_mouse_position()
+
+
+func _process(delta: float) -> void:
+	# If we aren't dragging and a mouse button press happens then
+	if not is_dragging :
+		#rigid_body_2d.freeze = true
+		# Clear the node_b path
+		mouse_pin.node_b = NodePath()
+		# Reset the angular damp to 0
+		rigid_body_2d.angular_damp = 0
+		# Or unlock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = false
+	else:
+		if not is_mouse_inside:
+			is_dragging = false
+		
+		
+		#rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			
+		rigid_body_2d.freeze = false
+		# Set the node_b to the rigid body that triggered this input event
+		mouse_pin.node_b = mouse_pin.get_path_to(rigid_body_2d)
+		# Up the angular damp to avoid rotating like crazy when moving the mouse
+		rigid_body_2d.angular_damp = 10
+		# You can also lock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = true
+
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	is_dragging = true
+
+func _on_button_button_up():
+	is_dragging = false
+
+"
+
+[sub_resource type="GDScript" id="GDScript_lh6mk"]
+script/source = "extends Node2D
+
+
+@onready var mouse_pin: PinJoint2D = $PinJoint2D
+@onready var fake_body: StaticBody2D = $PinJoint2D/StaticBody2D
+@onready var rigid_body_2d: RigidBody2D = $\".\"
+
+
+var is_dragging = false
+var is_mouse_inside = true
+
+
+func _ready() -> void:
+	# Set the node_a to a static body without a collision, we only need it for the pin effect.
+	mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	# Enable input pickable on the rigid body to be able to detect mouse clicks
+	rigid_body_2d.input_pickable = true
+
+
+func _physics_process(delta: float) -> void:
+	mouse_pin.global_position = get_global_mouse_position()
+
+
+func _process(delta: float) -> void:
+	# If we aren't dragging and a mouse button press happens then
+	if not is_dragging :
+		#rigid_body_2d.freeze = true
+		# Clear the node_b path
+		mouse_pin.node_b = NodePath()
+		# Reset the angular damp to 0
+		rigid_body_2d.angular_damp = 0
+		# Or unlock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = false
+	else:
+		if not is_mouse_inside:
+			is_dragging = false
+		
+		
+		#rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			
+		rigid_body_2d.freeze = false
+		# Set the node_b to the rigid body that triggered this input event
+		mouse_pin.node_b = mouse_pin.get_path_to(rigid_body_2d)
+		# Up the angular damp to avoid rotating like crazy when moving the mouse
+		rigid_body_2d.angular_damp = 10
+		# You can also lock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = true
+
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	is_dragging = true
+
+func _on_button_button_up():
+	is_dragging = false
+
+"
+
+[sub_resource type="GDScript" id="GDScript_fpg7f"]
+script/source = "extends Node2D
+
+
+@onready var mouse_pin: PinJoint2D = $PinJoint2D
+@onready var fake_body: StaticBody2D = $PinJoint2D/StaticBody2D
+@onready var rigid_body_2d: RigidBody2D = $\".\"
+
+
+var is_dragging = false
+var is_mouse_inside = true
+
+
+func _ready() -> void:
+	# Set the node_a to a static body without a collision, we only need it for the pin effect.
+	mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	# Enable input pickable on the rigid body to be able to detect mouse clicks
+	rigid_body_2d.input_pickable = true
+
+
+func _physics_process(delta: float) -> void:
+	mouse_pin.global_position = get_global_mouse_position()
+
+
+func _process(delta: float) -> void:
+	# If we aren't dragging and a mouse button press happens then
+	if not is_dragging :
+		#rigid_body_2d.freeze = true
+		# Clear the node_b path
+		mouse_pin.node_b = NodePath()
+		# Reset the angular damp to 0
+		rigid_body_2d.angular_damp = 0
+		# Or unlock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = false
+	else:
+		if not is_mouse_inside:
+			is_dragging = false
+		
+		
+		#rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			
+		rigid_body_2d.freeze = false
+		# Set the node_b to the rigid body that triggered this input event
+		mouse_pin.node_b = mouse_pin.get_path_to(rigid_body_2d)
+		# Up the angular damp to avoid rotating like crazy when moving the mouse
+		rigid_body_2d.angular_damp = 10
+		# You can also lock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = true
+
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	is_dragging = true
+
+func _on_button_button_up():
+	is_dragging = false
+
+"
+
+[sub_resource type="GDScript" id="GDScript_fv6ae"]
+script/source = "extends Node2D
+
+
+@onready var mouse_pin: PinJoint2D = $PinJoint2D
+@onready var fake_body: StaticBody2D = $PinJoint2D/StaticBody2D
+@onready var rigid_body_2d: RigidBody2D = $\".\"
+
+
+var is_dragging = false
+var is_mouse_inside = true
+
+
+func _ready() -> void:
+	# Set the node_a to a static body without a collision, we only need it for the pin effect.
+	mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	# Enable input pickable on the rigid body to be able to detect mouse clicks
+	rigid_body_2d.input_pickable = true
+
+
+func _physics_process(delta: float) -> void:
+	mouse_pin.global_position = get_global_mouse_position()
+
+
+func _process(delta: float) -> void:
+	# If we aren't dragging and a mouse button press happens then
+	if not is_dragging :
+		#rigid_body_2d.freeze = true
+		# Clear the node_b path
+		mouse_pin.node_b = NodePath()
+		# Reset the angular damp to 0
+		rigid_body_2d.angular_damp = 0
+		# Or unlock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = false
+	else:
+		if not is_mouse_inside:
+			is_dragging = false
+		
+		
+		#rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			
+		rigid_body_2d.freeze = false
+		# Set the node_b to the rigid body that triggered this input event
+		mouse_pin.node_b = mouse_pin.get_path_to(rigid_body_2d)
+		# Up the angular damp to avoid rotating like crazy when moving the mouse
+		rigid_body_2d.angular_damp = 10
+		# You can also lock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = true
+
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	is_dragging = true
+
+func _on_button_button_up():
+	is_dragging = false
+
+"
+
+[sub_resource type="GDScript" id="GDScript_sr3ef"]
+script/source = "extends Node2D
+
+
+@onready var mouse_pin: PinJoint2D = $PinJoint2D
+@onready var fake_body: StaticBody2D = $PinJoint2D/StaticBody2D
+@onready var rigid_body_2d: RigidBody2D = $\".\"
+
+
+var is_dragging = false
+var is_mouse_inside = true
+
+
+func _ready() -> void:
+	# Set the node_a to a static body without a collision, we only need it for the pin effect.
+	mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	# Enable input pickable on the rigid body to be able to detect mouse clicks
+	rigid_body_2d.input_pickable = true
+
+
+func _physics_process(delta: float) -> void:
+	mouse_pin.global_position = get_global_mouse_position()
+
+
+func _process(delta: float) -> void:
+	# If we aren't dragging and a mouse button press happens then
+	if not is_dragging :
+		#rigid_body_2d.freeze = true
+		# Clear the node_b path
+		mouse_pin.node_b = NodePath()
+		# Reset the angular damp to 0
+		rigid_body_2d.angular_damp = 0
+		# Or unlock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = false
+	else:
+		if not is_mouse_inside:
+			is_dragging = false
+		
+		
+		#rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			
+		rigid_body_2d.freeze = false
+		# Set the node_b to the rigid body that triggered this input event
+		mouse_pin.node_b = mouse_pin.get_path_to(rigid_body_2d)
+		# Up the angular damp to avoid rotating like crazy when moving the mouse
+		rigid_body_2d.angular_damp = 10
+		# You can also lock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = true
+
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	is_dragging = true
+
+func _on_button_button_up():
+	is_dragging = false
+
+"
+
+[sub_resource type="GDScript" id="GDScript_2fg0f"]
+script/source = "extends Node2D
+
+
+@onready var mouse_pin: PinJoint2D = $PinJoint2D
+@onready var fake_body: StaticBody2D = $PinJoint2D/StaticBody2D
+@onready var rigid_body_2d: RigidBody2D = $\".\"
+
+
+var is_dragging = false
+var is_mouse_inside = true
+
+
+func _ready() -> void:
+	# Set the node_a to a static body without a collision, we only need it for the pin effect.
+	mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	# Enable input pickable on the rigid body to be able to detect mouse clicks
+	rigid_body_2d.input_pickable = true
+
+
+func _physics_process(delta: float) -> void:
+	mouse_pin.global_position = get_global_mouse_position()
+
+
+func _process(delta: float) -> void:
+	# If we aren't dragging and a mouse button press happens then
+	if not is_dragging :
+		#rigid_body_2d.freeze = true
+		# Clear the node_b path
+		mouse_pin.node_b = NodePath()
+		# Reset the angular damp to 0
+		rigid_body_2d.angular_damp = 0
+		# Or unlock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = false
+	else:
+		if not is_mouse_inside:
+			is_dragging = false
+		
+		
+		#rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			
+		rigid_body_2d.freeze = false
+		# Set the node_b to the rigid body that triggered this input event
+		mouse_pin.node_b = mouse_pin.get_path_to(rigid_body_2d)
+		# Up the angular damp to avoid rotating like crazy when moving the mouse
+		rigid_body_2d.angular_damp = 10
+		# You can also lock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = true
+
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	is_dragging = true
+
+func _on_button_button_up():
+	is_dragging = false
+
+"
+
+[sub_resource type="GDScript" id="GDScript_m0vh4"]
+script/source = "extends Node2D
+
+
+@onready var mouse_pin: PinJoint2D = $PinJoint2D
+@onready var fake_body: StaticBody2D = $PinJoint2D/StaticBody2D
+@onready var rigid_body_2d: RigidBody2D = $\".\"
+
+
+var is_dragging = false
+var is_mouse_inside = true
+
+
+func _ready() -> void:
+	# Set the node_a to a static body without a collision, we only need it for the pin effect.
+	mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	# Enable input pickable on the rigid body to be able to detect mouse clicks
+	rigid_body_2d.input_pickable = true
+
+
+func _physics_process(delta: float) -> void:
+	mouse_pin.global_position = get_global_mouse_position()
+
+
+func _process(delta: float) -> void:
+	# If we aren't dragging and a mouse button press happens then
+	if not is_dragging :
+		#rigid_body_2d.freeze = true
+		# Clear the node_b path
+		mouse_pin.node_b = NodePath()
+		# Reset the angular damp to 0
+		rigid_body_2d.angular_damp = 0
+		# Or unlock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = false
+	else:
+		if not is_mouse_inside:
+			is_dragging = false
+		
+		
+		#rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			
+		rigid_body_2d.freeze = false
+		# Set the node_b to the rigid body that triggered this input event
+		mouse_pin.node_b = mouse_pin.get_path_to(rigid_body_2d)
+		# Up the angular damp to avoid rotating like crazy when moving the mouse
+		rigid_body_2d.angular_damp = 10
+		# You can also lock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = true
+
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	is_dragging = true
+
+func _on_button_button_up():
+	is_dragging = false
+
+"
+
+[sub_resource type="GDScript" id="GDScript_ia251"]
+script/source = "extends Node2D
+
+
+@onready var mouse_pin: PinJoint2D = $PinJoint2D
+@onready var fake_body: StaticBody2D = $PinJoint2D/StaticBody2D
+@onready var rigid_body_2d: RigidBody2D = $\".\"
+
+
+var is_dragging = false
+var is_mouse_inside = true
+
+
+func _ready() -> void:
+	# Set the node_a to a static body without a collision, we only need it for the pin effect.
+	mouse_pin.node_a = mouse_pin.get_path_to(fake_body)
+	# Enable input pickable on the rigid body to be able to detect mouse clicks
+	rigid_body_2d.input_pickable = true
+
+
+func _physics_process(delta: float) -> void:
+	mouse_pin.global_position = get_global_mouse_position()
+
+
+func _process(delta: float) -> void:
+	# If we aren't dragging and a mouse button press happens then
+	if not is_dragging :
+		#rigid_body_2d.freeze = true
+		# Clear the node_b path
+		mouse_pin.node_b = NodePath()
+		# Reset the angular damp to 0
+		rigid_body_2d.angular_damp = 0
+		# Or unlock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = false
+	else:
+		if not is_mouse_inside:
+			is_dragging = false
+		
+		
+		#rigid_body_2d.linear_velocity = rigid_body_2d.linear_velocity.limit_length(max_speed)
+			
+		rigid_body_2d.freeze = false
+		# Set the node_b to the rigid body that triggered this input event
+		mouse_pin.node_b = mouse_pin.get_path_to(rigid_body_2d)
+		# Up the angular damp to avoid rotating like crazy when moving the mouse
+		rigid_body_2d.angular_damp = 10
+		# You can also lock the rotation of the rigid body with
+#		rigid_body_2d.lock_rotation = true
+
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	is_dragging = true
+
+func _on_button_button_up():
+	is_dragging = false
+
+"
+
+[node name="Scene Egg" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_eh1s3")
+
+[node name="BG" parent="." instance=ExtResource("1_0lut7")]
+layout_mode = 1
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(309, 352)
+shape = SubResource("RectangleShape2D_ffh1s")
+
+[node name="EGG" type="Node2D" parent="."]
+position = Vector2(123, 94)
+scale = Vector2(0.644579, 0.644579)
+
+[node name="Egg" type="Sprite2D" parent="EGG"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_a22u0")
+position = Vector2(285.458, 178.411)
+texture = ExtResource("3_bj43a")
+
+[node name="EggHolder" type="Sprite2D" parent="EGG"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_b4rfd")
+position = Vector2(303, 262)
+texture = ExtResource("2_4l5aa")
+
+[node name="RigidBody2D2" type="RigidBody2D" parent="EGG"]
+position = Vector2(355.271, 68.2617)
+mass = 0.12
+gravity_scale = 0.626
+freeze = true
+script = SubResource("GDScript_r7ntm")
+
+[node name="EggShell1" type="Sprite2D" parent="EGG/RigidBody2D2"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_b4rfd")
+texture = ExtResource("3_n8i8y")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EGG/RigidBody2D2"]
+visible = false
+position = Vector2(-16.2897, -5.85981)
+scale = Vector2(1.16355, 1.58598)
+polygon = PackedVector2Array(-11.3334, -21.7384, 19.3334, -4.13082, 42.0001, 27.1715, 18, 15.4331, -20.6667, 12.4985)
+
+[node name="PinJoint2D" type="PinJoint2D" parent="EGG/RigidBody2D2"]
+position = Vector2(-457.663, -209.439)
+scale = Vector2(1.5514, 1.5514)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="EGG/RigidBody2D2/PinJoint2D"]
+
+[node name="Button" type="Button" parent="EGG/RigidBody2D2"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -26.3738
+offset_top = -29.4766
+offset_right = -18.3738
+offset_bottom = -21.4766
+rotation = 0.295732
+scale = Vector2(6.19405, 4.96214)
+
+[node name="RigidBody2D3" type="RigidBody2D" parent="EGG"]
+position = Vector2(369.234, 116.355)
+collision_layer = 2
+collision_mask = 2
+mass = 0.12
+gravity_scale = 0.626
+freeze = true
+script = SubResource("GDScript_1ecws")
+
+[node name="EggShell2" type="Sprite2D" parent="EGG/RigidBody2D3"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_b4rfd")
+texture = ExtResource("4_bb7nq")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EGG/RigidBody2D3/EggShell2"]
+visible = false
+polygon = PackedVector2Array(-20.7291, -29.8411, -11.4207, -31.3925, 18.056, -11.2243, 25.8129, 22.9065, 13.4017, 30.6635, -23.8319, 15.1495)
+
+[node name="PinJoint2D" type="PinJoint2D" parent="EGG/RigidBody2D3"]
+position = Vector2(-457.663, -209.439)
+scale = Vector2(1.5514, 1.5514)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="EGG/RigidBody2D3/PinJoint2D"]
+
+[node name="Button" type="Button" parent="EGG/RigidBody2D3"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -6.2056
+offset_top = -21.7196
+offset_right = 1.7944
+offset_bottom = -13.7196
+rotation = 0.518757
+scale = Vector2(5.29699, 4.73898)
+
+[node name="RigidBody2D12" type="RigidBody2D" parent="EGG"]
+position = Vector2(318.037, 108.598)
+collision_layer = 2
+collision_mask = 2
+mass = 0.12
+gravity_scale = 0.626
+freeze = true
+script = SubResource("GDScript_qvxva")
+
+[node name="EggShell3" type="Sprite2D" parent="EGG/RigidBody2D12"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_b4rfd")
+position = Vector2(6.10352e-05, 3.05176e-05)
+texture = ExtResource("5_ah818")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EGG/RigidBody2D12/EggShell3"]
+visible = false
+polygon = PackedVector2Array(-23.7291, -27.8879, -5.11224, -29.4393, 29.0186, -20.1309, 33.6728, -7.71967, 25.9158, 18.6542, -37.6917, 14, -48.5515, -3.06546, -26.8319, -15.4767)
+
+[node name="PinJoint2D" type="PinJoint2D" parent="EGG/RigidBody2D12"]
+position = Vector2(-457.663, -209.439)
+scale = Vector2(1.5514, 1.5514)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="EGG/RigidBody2D12/PinJoint2D"]
+
+[node name="Button" type="Button" parent="EGG/RigidBody2D12"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -35.6822
+offset_top = -29.4766
+offset_right = -27.6822
+offset_bottom = -21.4766
+rotation = 0.158725
+scale = Vector2(8.29712, 4.74578)
+
+[node name="RigidBody2D11" type="RigidBody2D" parent="EGG"]
+position = Vector2(373.888, 166)
+collision_layer = 2
+collision_mask = 2
+mass = 0.12
+gravity_scale = 0.626
+freeze = true
+script = SubResource("GDScript_cears")
+
+[node name="EggShell4" type="Sprite2D" parent="EGG/RigidBody2D11"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_b4rfd")
+texture = ExtResource("6_5c6kf")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EGG/RigidBody2D11/EggShell4"]
+visible = false
+polygon = PackedVector2Array(20.7383, -27.0187, 22.2896, 25.7289, -36.6636, 21.0747, -7.18698, -25.4673, 8.32703, -17.7103)
+
+[node name="PinJoint2D" type="PinJoint2D" parent="EGG/RigidBody2D11"]
+position = Vector2(-457.663, -209.439)
+scale = Vector2(1.5514, 1.5514)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="EGG/RigidBody2D11/PinJoint2D"]
+
+[node name="Button" type="Button" parent="EGG/RigidBody2D11"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -15.514
+offset_top = -26.3738
+offset_right = -7.51401
+offset_bottom = -18.3738
+rotation = 0.295732
+scale = Vector2(5.56936, 5.28491)
+
+[node name="RigidBody2D10" type="RigidBody2D" parent="EGG"]
+position = Vector2(314.934, 153.589)
+mass = 0.12
+gravity_scale = 0.626
+freeze = true
+script = SubResource("GDScript_lh6mk")
+
+[node name="EggShell5" type="Sprite2D" parent="EGG/RigidBody2D10"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_b4rfd")
+texture = ExtResource("7_e7mki")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EGG/RigidBody2D10/EggShell5"]
+visible = false
+polygon = PackedVector2Array(-35.6823, -31.028, 27.9252, -26.3738, 27.9252, -20.1682, 51.1962, -12.4112, 38.785, 6.20561, -4.65424, 12.4112, -9.30844, 1.55141, -38.7851, 0)
+
+[node name="PinJoint2D" type="PinJoint2D" parent="EGG/RigidBody2D10"]
+position = Vector2(-457.663, -209.439)
+scale = Vector2(1.5514, 1.5514)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="EGG/RigidBody2D10/PinJoint2D"]
+
+[node name="Button" type="Button" parent="EGG/RigidBody2D10"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -32.5794
+offset_top = -31.028
+offset_right = -24.5794
+offset_bottom = -23.028
+rotation = 0.227992
+scale = Vector2(10.4983, 3.63642)
+
+[node name="RigidBody2D9" type="RigidBody2D" parent="EGG"]
+position = Vector2(302.523, 169.103)
+mass = 0.12
+gravity_scale = 0.626
+freeze = true
+script = SubResource("GDScript_fpg7f")
+
+[node name="EggShell6" type="Sprite2D" parent="EGG/RigidBody2D9"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_b4rfd")
+texture = ExtResource("8_8ipg7")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EGG/RigidBody2D9/EggShell6"]
+visible = false
+polygon = PackedVector2Array(-55.9253, -3.25237, -48.1682, 15.3645, -3.17761, 15.3645, -3.17761, 21.5701, 20.0934, 20.0186, 23.1962, 24.6729, 38.7102, 16.9158, 51.1214, -9.45798, 7.68219, -3.25237, 3.02798, -14.1122, -26.4486, -15.6636)
+
+[node name="PinJoint2D" type="PinJoint2D" parent="EGG/RigidBody2D9"]
+position = Vector2(-457.663, -209.439)
+scale = Vector2(1.5514, 1.5514)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="EGG/RigidBody2D9/PinJoint2D"]
+
+[node name="Button" type="Button" parent="EGG/RigidBody2D9"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -46.542
+offset_top = -18.6168
+offset_right = -38.542
+offset_bottom = -10.6168
+rotation = 0.121603
+scale = Vector2(11.0464, 3.68447)
+
+[node name="RigidBody2D8" type="RigidBody2D" parent="EGG"]
+position = Vector2(228.056, 152.037)
+collision_layer = 2
+collision_mask = 2
+mass = 0.12
+gravity_scale = 0.626
+freeze = true
+script = SubResource("GDScript_fv6ae")
+
+[node name="EggShell7" type="Sprite2D" parent="EGG/RigidBody2D8"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_b4rfd")
+position = Vector2(3.05176e-05, 0)
+texture = ExtResource("9_0jdhe")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EGG/RigidBody2D8/EggShell7"]
+visible = false
+polygon = PackedVector2Array(-31.5327, 27.2429, -31.5327, 8.6261, 28.9719, -27.0561, 49.1402, -28.6075, 47.5887, 0.86911, 11.9065, 17.9345)
+
+[node name="PinJoint2D" type="PinJoint2D" parent="EGG/RigidBody2D8"]
+position = Vector2(-457.663, -209.439)
+scale = Vector2(1.5514, 1.5514)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="EGG/RigidBody2D8/PinJoint2D"]
+
+[node name="Button" type="Button" parent="EGG/RigidBody2D8"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -34.1308
+offset_top = 9.30841
+offset_right = -26.1308
+offset_bottom = 17.3084
+rotation = -0.542545
+scale = Vector2(10.2665, 3.68447)
+
+[node name="RigidBody2D7" type="RigidBody2D" parent="EGG"]
+position = Vector2(226.505, 117.907)
+collision_layer = 2
+collision_mask = 2
+mass = 0.12
+gravity_scale = 0.626
+freeze = true
+script = SubResource("GDScript_sr3ef")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EGG/RigidBody2D7"]
+visible = false
+position = Vector2(6.10352e-05, 3.05176e-05)
+polygon = PackedVector2Array(-2.43927, -43.7944, -27.2617, 43.084, 30.1402, 8.95322, 20.8318, 1.1962, 33.243, -15.8692, 8.42053, -26.729, 8.42053, -40.6917)
+
+[node name="EggShell8" type="Sprite2D" parent="EGG/RigidBody2D7"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_b4rfd")
+position = Vector2(3.05176e-05, 3.05176e-05)
+texture = ExtResource("10_ip1g0")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="EGG/RigidBody2D7"]
+position = Vector2(-457.663, -209.439)
+scale = Vector2(1.5514, 1.5514)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="EGG/RigidBody2D7/PinJoint2D"]
+
+[node name="Button" type="Button" parent="EGG/RigidBody2D7"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -9.3084
+offset_top = -32.5794
+offset_right = -1.3084
+offset_bottom = -24.5794
+rotation = 0.295732
+scale = Vector2(5.33468, 7.48917)
+
+[node name="RigidBody2D6" type="RigidBody2D" parent="EGG"]
+position = Vector2(254.43, 99.2897)
+mass = 0.12
+gravity_scale = 0.626
+freeze = true
+script = SubResource("GDScript_2fg0f")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EGG/RigidBody2D6"]
+visible = false
+polygon = PackedVector2Array(-27.0467, -32.8972, 38.1121, -20.486, 36.5607, -4.97197, 14.8411, 5.88785, 25.7009, 24.5047, -0.672913, 24.5047, -6.87851, 18.2991, 5.53271, 1.23364, -19.2897, -9.62617, -19.2897, -23.5888, -28.5981, -23.5888)
+
+[node name="EggShell9" type="Sprite2D" parent="EGG/RigidBody2D6"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_b4rfd")
+texture = ExtResource("11_0dvdw")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="EGG/RigidBody2D6"]
+position = Vector2(-457.663, -209.439)
+scale = Vector2(1.5514, 1.5514)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="EGG/RigidBody2D6/PinJoint2D"]
+
+[node name="Button" type="Button" parent="EGG/RigidBody2D6"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -26.3738
+offset_top = -35.6822
+offset_right = -18.3738
+offset_bottom = -27.6822
+rotation = 0.295732
+scale = Vector2(8.52726, 3.0185)
+
+[node name="RigidBody2D4" type="RigidBody2D" parent="EGG"]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(285.458, 48.0934)
+collision_layer = 2
+collision_mask = 2
+mass = 0.12
+gravity_scale = 0.626
+freeze = true
+script = SubResource("GDScript_m0vh4")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EGG/RigidBody2D4"]
+visible = false
+light_mask = 2
+visibility_layer = 2
+position = Vector2(0, -1.52588e-05)
+polygon = PackedVector2Array(39.8971, -18.514, 10.4204, -26.271, -29.916, -13.8598, -28.3646, 14.0654, -1.99078, 9.41121, 7.31763, 32.6822, 29.0373, 31.1308)
+
+[node name="EggShell10" type="Sprite2D" parent="EGG/RigidBody2D4"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_b4rfd")
+position = Vector2(0, -1.52588e-05)
+texture = ExtResource("12_aq1kl")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="EGG/RigidBody2D4"]
+position = Vector2(-457.663, -209.439)
+scale = Vector2(1.5514, 1.5514)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="EGG/RigidBody2D4/PinJoint2D"]
+
+[node name="Button" type="Button" parent="EGG/RigidBody2D4"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -23.271
+offset_top = -37.2336
+offset_right = -15.271
+offset_bottom = -29.2336
+rotation = 0.295732
+scale = Vector2(9.26555, 5.20236)
+
+[node name="RigidBody2D5" type="RigidBody2D" parent="EGG"]
+position = Vector2(266.841, 63.6075)
+collision_layer = 2
+collision_mask = 2
+mass = 0.12
+gravity_scale = 0.626
+freeze = true
+script = SubResource("GDScript_ia251")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EGG/RigidBody2D5"]
+polygon = PackedVector2Array(-10.8598, -26.3738, -38.785, 1.55141, 24.8224, 13.9626, 17.0654, -4.65421, -10.8598, -1.55139)
+
+[node name="EggShell11" type="Sprite2D" parent="EGG/RigidBody2D5"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_b4rfd")
+position = Vector2(0, -1.52588e-05)
+texture = ExtResource("13_6qm8l")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="EGG/RigidBody2D5"]
+position = Vector2(-457.663, -209.439)
+scale = Vector2(1.5514, 1.5514)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="EGG/RigidBody2D5/PinJoint2D"]
+collision_layer = 2
+collision_mask = 2
+
+[node name="Button" type="Button" parent="EGG/RigidBody2D5"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -27.9252
+offset_top = -26.3738
+offset_right = -19.9252
+offset_bottom = -18.3738
+rotation = 0.295732
+scale = Vector2(7.26767, 3.68447)
+
+[node name="Hud" parent="." instance=ExtResource("14_sywok")]
+layout_mode = 1
+
+[connection signal="button_down" from="EGG/RigidBody2D2/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="EGG/RigidBody2D2/Button" to="EGG/RigidBody2D2" method="_on_button_button_down"]
+[connection signal="button_up" from="EGG/RigidBody2D2/Button" to="EGG/RigidBody2D2" method="_on_button_button_up"]
+[connection signal="button_down" from="EGG/RigidBody2D3/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="EGG/RigidBody2D3/Button" to="EGG/RigidBody2D3" method="_on_button_button_down"]
+[connection signal="button_up" from="EGG/RigidBody2D3/Button" to="EGG/RigidBody2D3" method="_on_button_button_up"]
+[connection signal="button_down" from="EGG/RigidBody2D12/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="EGG/RigidBody2D12/Button" to="EGG/RigidBody2D12" method="_on_button_button_down"]
+[connection signal="button_up" from="EGG/RigidBody2D12/Button" to="EGG/RigidBody2D12" method="_on_button_button_up"]
+[connection signal="button_down" from="EGG/RigidBody2D11/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="EGG/RigidBody2D11/Button" to="EGG/RigidBody2D11" method="_on_button_button_down"]
+[connection signal="button_up" from="EGG/RigidBody2D11/Button" to="EGG/RigidBody2D11" method="_on_button_button_up"]
+[connection signal="button_down" from="EGG/RigidBody2D10/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="EGG/RigidBody2D10/Button" to="EGG/RigidBody2D10" method="_on_button_button_down"]
+[connection signal="button_up" from="EGG/RigidBody2D10/Button" to="EGG/RigidBody2D10" method="_on_button_button_up"]
+[connection signal="button_down" from="EGG/RigidBody2D9/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="EGG/RigidBody2D9/Button" to="EGG/RigidBody2D9" method="_on_button_button_down"]
+[connection signal="button_up" from="EGG/RigidBody2D9/Button" to="EGG/RigidBody2D9" method="_on_button_button_up"]
+[connection signal="button_down" from="EGG/RigidBody2D8/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="EGG/RigidBody2D8/Button" to="EGG/RigidBody2D8" method="_on_button_button_down"]
+[connection signal="button_up" from="EGG/RigidBody2D8/Button" to="EGG/RigidBody2D8" method="_on_button_button_up"]
+[connection signal="button_down" from="EGG/RigidBody2D7/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="EGG/RigidBody2D7/Button" to="EGG/RigidBody2D7" method="_on_button_button_down"]
+[connection signal="button_up" from="EGG/RigidBody2D7/Button" to="EGG/RigidBody2D7" method="_on_button_button_up"]
+[connection signal="button_down" from="EGG/RigidBody2D6/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="EGG/RigidBody2D6/Button" to="EGG/RigidBody2D6" method="_on_button_button_down"]
+[connection signal="button_up" from="EGG/RigidBody2D6/Button" to="EGG/RigidBody2D6" method="_on_button_button_up"]
+[connection signal="button_down" from="EGG/RigidBody2D4/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="EGG/RigidBody2D4/Button" to="EGG/RigidBody2D4" method="_on_button_button_down"]
+[connection signal="button_up" from="EGG/RigidBody2D4/Button" to="EGG/RigidBody2D4" method="_on_button_button_up"]
+[connection signal="button_down" from="EGG/RigidBody2D5/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="EGG/RigidBody2D5/Button" to="EGG/RigidBody2D5" method="_on_button_button_down"]
+[connection signal="button_up" from="EGG/RigidBody2D5/Button" to="EGG/RigidBody2D5" method="_on_button_button_up"]

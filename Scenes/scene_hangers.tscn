@@ -1,0 +1,477 @@
+[gd_scene load_steps=21 format=3 uid="uid://c7xyrbckamebk"]
+
+[ext_resource type="Shader" path="res://Shader/pixel_shader_material.gdshader" id="1_ccnyv"]
+[ext_resource type="PackedScene" uid="uid://ryvkkr701wml" path="res://Scenes/BG.tscn" id="1_u607j"]
+[ext_resource type="Texture2D" uid="uid://cg3xjwe0n8ek6" path="res://Sprites/Scenes/Scene 2/Hanger Broken2.png" id="2_c3i0y"]
+[ext_resource type="Texture2D" uid="uid://gj3f3ad6kgx2" path="res://Sprites/Scenes/Scene 2/Hanger Broken.png" id="3_jftlb"]
+[ext_resource type="Texture2D" uid="uid://btyu1a6yblo0f" path="res://Sprites/Scenes/Scene 2/Hanger.png" id="4_xp02p"]
+[ext_resource type="Texture2D" uid="uid://crd828ri11sbl" path="res://Sprites/Scenes/Scene 2/Scarf 1 .png" id="5_jeej0"]
+[ext_resource type="Texture2D" uid="uid://dnukmqnwov6g8" path="res://Sprites/Scenes/Scene 2/Scarf 2.png" id="6_qjiyh"]
+[ext_resource type="Script" path="res://Scripts/darag_and_drap_area.gd" id="6_tsb5q"]
+[ext_resource type="Texture2D" uid="uid://ddytmc7dy8cbl" path="res://Sprites/Scenes/Scene 2/Scarf 1 back .png" id="7_1wqnn"]
+[ext_resource type="PackedScene" uid="uid://btom87k2ao2y2" path="res://Ui/hud.tscn" id="8_62oww"]
+[ext_resource type="Texture2D" uid="uid://de5d0ep16yuwi" path="res://Sprites/Scenes/Scene 2/Scarf 2 back.png" id="9_1lk86"]
+
+[sub_resource type="GDScript" id="GDScript_33cky"]
+script/source = "extends Control
+
+@onready var scarf1 : Node2D = $Scarf1
+@onready var scarf2 : Node2D = $Scarf2
+@onready var Hanger1 : StaticBody2D =  $Hanger2/StaticBody2D9
+@onready var Hanger2 : StaticBody2D =  $Hanger3/StaticBody2D9
+
+var count = 0
+var Scarf1stand1 = false
+var Scarf1stand2 = false
+var Scarf2stand1 = false
+var Scarf2stand2 = false
+
+func _ready():
+	$Scarf1.connect(\"scarf_put\", check_scarf_where_put)
+	$Scarf2.connect(\"scarf_put\", check_scarf_where_put)
+
+
+func check_scarf_where_put():
+	
+	print (scarf1.position)
+	print (scarf2.position)
+	print (Hanger1.position)
+	print (Hanger2.position)
+	if scarf1.position == Hanger1.position : 
+		Scarf1stand1 = true
+	if scarf1.position == Hanger2.position:
+		Scarf1stand2 = true
+	if scarf2.position == Hanger1.position:
+		Scarf2stand1 = true
+	if scarf2.position == Hanger2.position :
+		Scarf2stand2 = true
+	scarf_put()
+		
+	
+func break_hanger():
+	print(\"BREAKING HANGER\")
+	print (Scarf1stand1)
+	print (Scarf1stand2)
+	print (Scarf2stand1)
+	print (Scarf2stand2)
+	if(Scarf1stand1 == true):
+		print (\"Scarf1stand1\")
+		$Scarf1/Scarf1.freeze = false
+		$Hanger2/Hanger.visible = false
+		$Hanger2/Broken.visible = true
+		$Hanger2/Broken/RigidBody2D.freeze = false
+	if(Scarf2stand1 == true):
+		print (\"Scarf2stand1\")
+		$Scarf2/Scarf1.freeze = false
+		$Hanger2/Hanger.visible = false
+		$Hanger2/Broken.visible = true
+		$Hanger2/Broken/RigidBody2D.freeze = false
+	if(Scarf1stand2 == true):
+		print (\"Scarf1stand2\")
+		$Scarf1/Scarf1.freeze = false
+		$Hanger3/Hanger.visible = false
+		$Hanger3/Broken.visible = true
+		$Hanger3/Broken/RigidBody2D.freeze = false
+	if(Scarf2stand2 == true):
+		print (\"Scarf2stand2\")
+		$Scarf2/Scarf1.freeze = false
+		$Hanger3/Hanger.visible = false
+		$Hanger3/Broken.visible = true
+		$Hanger3/Broken/RigidBody2D.freeze = false
+	
+func scarf_put():
+	print (count)
+	count+=1
+	if count >= 2:
+		break_hanger()
+		$Hud/HudButtons/Next.visible = true
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0or87"]
+shader = ExtResource("1_ccnyv")
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_a8kuj"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hk4du"]
+size = Vector2(127, 126)
+
+[sub_resource type="GDScript" id="GDScript_1isqa"]
+script/source = "extends Node2D
+
+
+signal scarf_put
+var peace_placed = false
+var draggable = false
+var is_inside_dropable = false
+var body_ref
+var offset: Vector2
+var initialPos: Vector2
+
+@onready var Hanger1 : StaticBody2D =  $\"../Hanger2/StaticBody2D9\"
+@onready var Hanger2 : StaticBody2D =  $\"../Hanger3/StaticBody2D9\"
+@onready var scarf1 : Node2D = $\".\"
+@onready var scarf2 : Node2D = $\"../Scarf2\"
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	if draggable and peace_placed == false:
+		if Input.is_action_just_pressed(\"click\"):
+			initialPos = global_position
+			offset = get_global_mouse_position() - global_position
+			Global.is_dragging = true
+		if Input.is_action_pressed(\"click\"):
+			global_position = get_global_mouse_position() - offset
+		elif Input.is_action_just_released(\"click\"):
+			Global.is_dragging = false
+			if is_inside_dropable:
+				if !(scarf1.position == body_ref.position):
+						pass
+				if !(scarf2.position == body_ref.position):
+					var tween = get_tree().create_tween()
+					
+					peace_placed = true
+					tween.tween_property(self,\"position\", body_ref.position,0.2)
+					
+					#print (body_ref.position.x)
+					#print (Hanger1.position.x)
+					emit_signal(\"scarf_put\")
+				#.setease(Tween.EASE_OUT)
+			#else :
+				#tween.tween_property(self,\"global_position\", initialPos,0.2)#.setease(Tween.EASE_OUT)
+
+
+func _on_area_2d_body_entered(body):
+	is_inside_dropable = true
+	body_ref = body 
+
+
+func _on_area_2d_body_exited(body):
+	is_inside_dropable = false
+
+
+func _on_button_mouse_entered():
+	if not Global.is_dragging and peace_placed == false:
+		draggable = true
+		
+
+func _on_button_mouse_exited():
+	if not Global.is_dragging:
+		draggable = false
+
+
+func _on_button_button_down():
+	pass # Replace with function body.
+
+
+func _on_button_button_up():
+	pass # Replace with function body.
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bjrrx"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_moyys"]
+size = Vector2(110, 63.5)
+
+[sub_resource type="GDScript" id="GDScript_q8kk4"]
+script/source = "extends Node2D
+
+
+signal scarf_put
+var peace_placed = false
+var draggable = false
+var is_inside_dropable = false
+var body_ref
+var offset: Vector2
+var initialPos: Vector2
+
+@onready var Hanger1 : StaticBody2D =  $\"../Hanger2/StaticBody2D9\"
+@onready var Hanger2 : StaticBody2D =  $\"../Hanger3/StaticBody2D9\"
+@onready var scarf1 : Node2D = $\"../Scarf1\"
+@onready var scarf2 : Node2D = $\".\"
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	if draggable and peace_placed == false:
+		if Input.is_action_just_pressed(\"click\"):
+			initialPos = global_position
+			offset = get_global_mouse_position() - global_position
+			Global.is_dragging = true
+		if Input.is_action_pressed(\"click\"):
+			global_position = get_global_mouse_position() - offset
+		elif Input.is_action_just_released(\"click\"):
+			Global.is_dragging = false
+			if is_inside_dropable:
+				if !(scarf1.position == body_ref.position):
+					var tween = get_tree().create_tween()
+					
+					peace_placed = true
+					tween.tween_property(self,\"position\", body_ref.position,0.2)
+					
+					#print (body_ref.position.x)
+					#print (Hanger1.position.x)
+					emit_signal(\"scarf_put\")
+				#.setease(Tween.EASE_OUT)
+			#else :
+				#tween.tween_property(self,\"global_position\", initialPos,0.2)#.setease(Tween.EASE_OUT)
+
+
+func _on_area_2d_body_entered(body):
+	is_inside_dropable = true
+	body_ref = body 
+
+
+func _on_area_2d_body_exited(body):
+	is_inside_dropable = false
+
+
+func _on_button_mouse_entered():
+	if not Global.is_dragging and peace_placed == false:
+		draggable = true
+		
+
+func _on_button_mouse_exited():
+	if not Global.is_dragging:
+		draggable = false
+
+
+func _on_button_button_down():
+	pass # Replace with function body.
+
+
+func _on_button_button_up():
+	pass # Replace with function body.
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5ew0l"]
+size = Vector2(714, 116)
+
+[node name="scene_hangers" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_33cky")
+
+[node name="BG" parent="." instance=ExtResource("1_u607j")]
+layout_mode = 1
+
+[node name="Hanger2" type="Node2D" parent="."]
+
+[node name="Broken" type="Node2D" parent="Hanger2"]
+visible = false
+
+[node name="RigidBody2D" type="RigidBody2D" parent="Hanger2/Broken"]
+position = Vector2(235, 132.5)
+freeze = true
+constant_force = Vector2(100, 10)
+constant_torque = 3000.0
+
+[node name="HangerBroken2" type="Sprite2D" parent="Hanger2/Broken/RigidBody2D"]
+z_index = 1
+texture_filter = 2
+material = SubResource("ShaderMaterial_0or87")
+texture = ExtResource("2_c3i0y")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hanger2/Broken/RigidBody2D"]
+position = Vector2(0, -13)
+shape = SubResource("CircleShape2D_a8kuj")
+
+[node name="HangerBroken" type="Sprite2D" parent="Hanger2/Broken"]
+z_index = 1
+texture_filter = 2
+material = SubResource("ShaderMaterial_0or87")
+position = Vector2(210, 129.5)
+texture = ExtResource("3_jftlb")
+
+[node name="Hanger" type="Sprite2D" parent="Hanger2"]
+z_index = 1
+texture_filter = 2
+material = SubResource("ShaderMaterial_0or87")
+position = Vector2(210, 137.5)
+texture = ExtResource("4_xp02p")
+
+[node name="StaticBody2D9" type="StaticBody2D" parent="Hanger2"]
+position = Vector2(236, 152)
+scale = Vector2(0.7, 0.508276)
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("6_tsb5q")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hanger2/StaticBody2D9"]
+position = Vector2(-1.5, 1)
+shape = SubResource("RectangleShape2D_hk4du")
+
+[node name="ColorRect" type="ColorRect" parent="Hanger2/StaticBody2D9"]
+offset_left = -64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = 64.0
+mouse_filter = 1
+color = Color(1, 1, 1, 0.278431)
+metadata/_edit_use_anchors_ = true
+
+[node name="Hanger3" type="Node2D" parent="."]
+
+[node name="Broken" type="Node2D" parent="Hanger3"]
+visible = false
+
+[node name="RigidBody2D" type="RigidBody2D" parent="Hanger3/Broken"]
+position = Vector2(433, 131.5)
+freeze = true
+constant_force = Vector2(100, 10)
+constant_torque = 3000.0
+
+[node name="HangerBroken2" type="Sprite2D" parent="Hanger3/Broken/RigidBody2D"]
+z_index = 1
+texture_filter = 2
+material = SubResource("ShaderMaterial_0or87")
+texture = ExtResource("2_c3i0y")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hanger3/Broken/RigidBody2D"]
+position = Vector2(0, -13)
+shape = SubResource("CircleShape2D_a8kuj")
+
+[node name="HangerBroken" type="Sprite2D" parent="Hanger3/Broken"]
+z_index = 1
+texture_filter = 2
+material = SubResource("ShaderMaterial_0or87")
+position = Vector2(408, 128.5)
+texture = ExtResource("3_jftlb")
+
+[node name="Hanger" type="Sprite2D" parent="Hanger3"]
+z_index = 1
+texture_filter = 2
+material = SubResource("ShaderMaterial_0or87")
+position = Vector2(408, 136.5)
+texture = ExtResource("4_xp02p")
+
+[node name="StaticBody2D9" type="StaticBody2D" parent="Hanger3"]
+position = Vector2(434, 151)
+scale = Vector2(0.7, 0.508276)
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("6_tsb5q")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hanger3/StaticBody2D9"]
+position = Vector2(-1.5, 1)
+shape = SubResource("RectangleShape2D_hk4du")
+
+[node name="ColorRect" type="ColorRect" parent="Hanger3/StaticBody2D9"]
+offset_left = -64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = 64.0
+mouse_filter = 1
+color = Color(1, 1, 1, 0.278431)
+metadata/_edit_use_anchors_ = true
+
+[node name="Scarf1" type="Node2D" parent="."]
+position = Vector2(109, 295)
+script = SubResource("GDScript_1isqa")
+
+[node name="Scarf1" type="RigidBody2D" parent="Scarf1"]
+gravity_scale = 0.0
+freeze = true
+
+[node name="Scarf2Back" type="Sprite2D" parent="Scarf1/Scarf1"]
+position = Vector2(1, 39)
+scale = Vector2(0.680679, 0.680679)
+texture = ExtResource("9_1lk86")
+
+[node name="Scarf2" type="Sprite2D" parent="Scarf1/Scarf1"]
+z_index = 2
+texture_filter = 2
+material = SubResource("ShaderMaterial_0or87")
+position = Vector2(1, 39)
+scale = Vector2(0.680679, 0.680679)
+texture = ExtResource("6_qjiyh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Scarf1/Scarf1"]
+shape = SubResource("CircleShape2D_bjrrx")
+
+[node name="Button" type="Button" parent="Scarf1"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -48.0
+offset_top = -94.0
+offset_right = -40.0
+offset_bottom = -86.0
+scale = Vector2(13.3515, 13.0589)
+mouse_default_cursor_shape = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Area2D" type="Area2D" parent="Scarf1"]
+position = Vector2(19, -5)
+scale = Vector2(0.711578, 1.4)
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Scarf1/Area2D"]
+position = Vector2(-26, -1.74998)
+shape = SubResource("RectangleShape2D_moyys")
+
+[node name="Scarf2" type="Node2D" parent="."]
+position = Vector2(561, 306)
+script = SubResource("GDScript_q8kk4")
+
+[node name="Scarf1" type="RigidBody2D" parent="Scarf2"]
+gravity_scale = 0.15
+freeze = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Scarf2/Scarf1"]
+shape = SubResource("CircleShape2D_bjrrx")
+
+[node name="Scarf1Back" type="Sprite2D" parent="Scarf2/Scarf1"]
+position = Vector2(40, 61)
+texture = ExtResource("7_1wqnn")
+
+[node name="Scarf3" type="Sprite2D" parent="Scarf2/Scarf1"]
+z_index = 2
+position = Vector2(40, 61)
+texture = ExtResource("5_jeej0")
+
+[node name="Button" type="Button" parent="Scarf2"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -48.0
+offset_top = -94.0
+offset_right = -40.0
+offset_bottom = -86.0
+scale = Vector2(13.3515, 13.0589)
+mouse_default_cursor_shape = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Area2D" type="Area2D" parent="Scarf2"]
+position = Vector2(19, -5)
+scale = Vector2(0.711578, 1.4)
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Scarf2/Area2D"]
+position = Vector2(-26, -1.74998)
+shape = SubResource("RectangleShape2D_moyys")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2(1, 361)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(314, 48)
+shape = SubResource("RectangleShape2D_5ew0l")
+
+[node name="Hud" parent="." instance=ExtResource("8_62oww")]
+layout_mode = 1
+
+[connection signal="button_down" from="Scarf1/Button" to="Scarf1" method="_on_button_button_down"]
+[connection signal="button_up" from="Scarf1/Button" to="Scarf1" method="_on_button_button_up"]
+[connection signal="mouse_entered" from="Scarf1/Button" to="Scarf1" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Scarf1/Button" to="Scarf1" method="_on_button_mouse_exited"]
+[connection signal="body_entered" from="Scarf1/Area2D" to="Scarf1" method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Scarf1/Area2D" to="Scarf1" method="_on_area_2d_body_exited"]
+[connection signal="button_down" from="Scarf2/Button" to="Scarf2" method="_on_button_button_down"]
+[connection signal="button_up" from="Scarf2/Button" to="Scarf2" method="_on_button_button_up"]
+[connection signal="mouse_entered" from="Scarf2/Button" to="Scarf2" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Scarf2/Button" to="Scarf2" method="_on_button_mouse_exited"]
+[connection signal="body_entered" from="Scarf2/Area2D" to="Scarf2" method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Scarf2/Area2D" to="Scarf2" method="_on_area_2d_body_exited"]

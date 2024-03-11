@@ -1,0 +1,77 @@
+[gd_scene load_steps=5 format=3 uid="uid://fvungvursvga"]
+
+[ext_resource type="PackedScene" uid="uid://byjtlttg613ul" path="res://Scenes/menu.tscn" id="1_7vcbb"]
+[ext_resource type="PackedScene" uid="uid://jxvr3kpoq2b7" path="res://Scenes/Splash/godot_splash.tscn" id="2_cfodc"]
+[ext_resource type="Script" path="res://Scripts/godot_splash.gd" id="3_o5rej"]
+
+[sub_resource type="GDScript" id="GDScript_tl84l"]
+script/source = "extends Control
+
+@export var _move_to: PackedScene
+
+@export var _initial_delay: float = 1
+
+var _splash_screens: Array[SplashScreen] = []
+
+@onready var _splash_screen_container: CenterContainer = $CenterContainer
+
+
+func _ready() -> void:
+	assert(_move_to)
+
+	set_process_input(false)
+
+	for splash_screen in _splash_screen_container.get_children():
+		splash_screen.hide()
+		_splash_screens.push_back(splash_screen)
+
+	await get_tree().create_timer(_initial_delay).timeout
+
+	_start_splash_screen()
+
+	set_process_input(true)
+
+
+func _input(_event: InputEvent) -> void:
+	if Input.is_action_just_pressed(\"ui_skip\"):
+		_skip()
+
+
+func _start_splash_screen() -> void:
+	if _splash_screens.size() == 0:
+		get_tree().change_scene_to_packed(_move_to)
+	else:
+		var splash_screen: SplashScreen = _splash_screens.pop_front()
+		splash_screen.start()
+		splash_screen.connect(\"finished\", _start_splash_screen)
+
+
+func _skip() -> void:
+	_splash_screen_container.get_child(0).queue_free()
+	_start_splash_screen()
+"
+
+[node name="SplashScreenManager" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_tl84l")
+_move_to = ExtResource("1_7vcbb")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = -112.0
+offset_top = -206.0
+offset_right = -72.0
+offset_bottom = -166.0
+scale = Vector2(22.8557, 24.9157)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+
+[node name="GodotSplash" parent="CenterContainer" instance=ExtResource("2_cfodc")]
+layout_mode = 2
+script = ExtResource("3_o5rej")

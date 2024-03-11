@@ -1,0 +1,303 @@
+[gd_scene load_steps=12 format=3 uid="uid://x0gk6eein3fx"]
+
+[ext_resource type="PackedScene" uid="uid://ryvkkr701wml" path="res://Scenes/BG.tscn" id="1_fw8ra"]
+[ext_resource type="Texture2D" uid="uid://7cx2jskdrufl" path="res://Sprites/Scenes/Scene 6/Line.png" id="2_03vrb"]
+[ext_resource type="Material" uid="uid://6y43sq8kn8cj" path="res://Shader/pixel_shader_material.tres" id="2_66o7e"]
+[ext_resource type="Texture2D" uid="uid://ba28pwvluti76" path="res://Sprites/Scenes/Scene 6/Pencil.png" id="3_ntog3"]
+[ext_resource type="Texture2D" uid="uid://5nw6xgyudpnd" path="res://Sprites/Scenes/Scene 6/Ruler.png" id="4_8v8xs"]
+[ext_resource type="PackedScene" uid="uid://btom87k2ao2y2" path="res://Ui/hud.tscn" id="5_54h7b"]
+
+[sub_resource type="GDScript" id="GDScript_yokq1"]
+script/source = "extends Control
+
+
+var click_pos: Array = []
+var current_line :Line2D
+
+const max_speed = 500
+var is_dragging = false
+var is_mouse_inside = true
+var is_in_place = true
+
+var is_ready_to_draw = true
+var can_reset = false
+var drawn_count = 0
+
+var line1_drawn = false
+var line2_drawn = false
+var line3_drawn = false
+
+var offset = Vector2()
+var modulate_color : Color
+
+@onready var ruler: Node2D = $Ruler
+@onready var pencil: RigidBody2D = $Ruler/RigidBody2D
+
+func _process(delta: float) -> void:
+	if (is_dragging == false and  is_ready_to_draw == true):
+		if (ruler.position == $Line1Colision.position or
+		 ruler.position == $Line2Colision.position or
+		 ruler.position == $Line3Colision.position ):
+			pencil.freeze = false
+			can_reset = true
+			is_ready_to_draw = false
+			print(\"freeze 1\")
+			$Ruler/Button.disabled = true
+	
+	elif (pencil.position.y > 110 ):
+		print(\"freeze 2\")
+		print(pencil.position.y)
+		can_reset = false  
+		pencil.freeze = true
+		pencil.position.y = -110
+		pencil.position.x = 0
+		$Ruler/Button.disabled = false
+		check_drawn_lines()		
+	if (pencil.position.y > 0 and drawn_count >= 2):
+		if (ruler.position == $Line1Colision.position and line1_drawn == false):
+			ruin_last_line()
+		if (ruler.position == $Line2Colision.position and line2_drawn == false):
+			ruin_last_line()
+		if (ruler.position == $Line3Colision.position and line3_drawn == false):
+			ruin_last_line()
+			
+	if (pencil.freeze == false):
+		click_pos.append(pencil.global_position)
+		queue_redraw()
+		
+
+func check_drawn_lines():
+	if (ruler.position == $Line1Colision.position and line1_drawn == false):
+		line1_drawn = true
+		drawn_count += 1
+	if (ruler.position == $Line2Colision.position and line2_drawn == false):
+		line2_drawn = true
+		drawn_count += 1
+	if (ruler.position == $Line3Colision.position and line3_drawn == false):
+		line3_drawn = true
+		drawn_count += 1
+	if (drawn_count >=  3):
+		$Hud/HudButtons/Next.visible = true
+
+func ruin_last_line():
+	pencil.constant_force.x = -860
+	
+func _draw():
+	modulate_color.r = 0
+	modulate_color.g = 0
+	modulate_color.b = 0
+	modulate_color.a = 1
+	var count = 0 
+	for point in click_pos:
+		count += 1
+		if count <= 50:
+			draw_circle(point,10,modulate_color)
+		else:
+			draw_circle(point,10,modulate_color)
+			#modulate_color.a -= 0.01
+				
+				
+func _notification(blah):
+	match blah:
+		NOTIFICATION_WM_MOUSE_EXIT:
+			is_mouse_inside = false
+		NOTIFICATION_WM_MOUSE_ENTER:
+			is_mouse_inside = true
+			
+func _on_button_button_down():
+	if ($Ruler/Button.disabled == false):
+		is_dragging = true
+		is_ready_to_draw = true 
+
+
+func _on_button_button_up():
+	is_dragging = false
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8krcl"]
+size = Vector2(131.255, 149.691)
+
+[sub_resource type="GDScript" id="GDScript_x324h"]
+script/source = "extends Node2D
+
+
+var peace_placed = false
+var draggable = false
+var is_inside_dropable = false
+var body_ref
+var offset: Vector2
+var initialPos: Vector2
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	if draggable and peace_placed == false:
+		if Input.is_action_just_pressed(\"click\") and $Button.disabled == false:
+			initialPos = global_position
+			offset = get_global_mouse_position() - global_position
+			Global.is_dragging = true
+		if Input.is_action_pressed(\"click\") and $Button.disabled == false :
+			global_position = get_global_mouse_position() - offset
+		elif Input.is_action_just_released(\"click\"):
+			Global.is_dragging = false
+			var tween = get_tree().create_tween()
+			if is_inside_dropable:
+				
+				tween.tween_property(self,\"position\", body_ref.position,0.2)#.setease(Tween.EASE_OUT)
+			#else :
+				#tween.tween_property(self,\"global_position\", initialPos,0.2)#.setease(Tween.EASE_OUT)
+
+
+func _on_area_2d_body_entered(body):
+	is_inside_dropable = true
+	body.modulate = Color(Color.AQUAMARINE, 1)
+	body_ref = body 
+
+
+func _on_area_2d_body_exited(body):
+	is_inside_dropable = false
+	body.modulate =  Color(Color.AQUA, 0.7)
+
+
+func _on_button_mouse_entered():
+	if not Global.is_dragging and peace_placed == false:
+		draggable = true
+		scale = Vector2(1.05, 1.05)
+		
+
+func _on_button_mouse_exited():
+	if not Global.is_dragging:
+		draggable = false
+		scale = Vector2(1, 1)
+
+
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_op3a0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c1sow"]
+size = Vector2(38.481, 170.714)
+
+[node name="scene_stripes" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_yokq1")
+
+[node name="BG" parent="." instance=ExtResource("1_fw8ra")]
+show_behind_parent = true
+layout_mode = 1
+
+[node name="Line1Colision" type="StaticBody2D" parent="."]
+position = Vector2(191, 202)
+scale = Vector2(0.525694, -1.777)
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Line1Colision"]
+position = Vector2(-2.85336, 1)
+shape = SubResource("RectangleShape2D_8krcl")
+
+[node name="Line" type="Sprite2D" parent="Line1Colision"]
+texture_filter = 2
+material = ExtResource("2_66o7e")
+position = Vector2(3.05176e-05, 0)
+scale = Vector2(1.90225, -0.562746)
+texture = ExtResource("2_03vrb")
+
+[node name="Line2Colision" type="StaticBody2D" parent="."]
+position = Vector2(350, 202)
+scale = Vector2(0.525694, -1.777)
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Line2Colision"]
+position = Vector2(-0.951111, 2.25101)
+scale = Vector2(0.999999, 0.999999)
+shape = SubResource("RectangleShape2D_8krcl")
+
+[node name="Line2" type="Sprite2D" parent="Line2Colision"]
+texture_filter = 2
+material = ExtResource("2_66o7e")
+scale = Vector2(1.90225, -0.562746)
+texture = ExtResource("2_03vrb")
+
+[node name="Line3Colision" type="StaticBody2D" parent="."]
+position = Vector2(497, 199)
+scale = Vector2(0.525694, -1.777)
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Line3Colision"]
+position = Vector2(-1.5, 1)
+shape = SubResource("RectangleShape2D_8krcl")
+
+[node name="Line3" type="Sprite2D" parent="Line3Colision"]
+texture_filter = 2
+material = ExtResource("2_66o7e")
+position = Vector2(0, -1.68824)
+scale = Vector2(1.90225, -0.562746)
+texture = ExtResource("2_03vrb")
+
+[node name="Ruler" type="Node2D" parent="."]
+position = Vector2(545, 195)
+script = SubResource("GDScript_x324h")
+
+[node name="Ruler" type="Sprite2D" parent="Ruler"]
+texture_filter = 2
+material = ExtResource("2_66o7e")
+position = Vector2(12.8503, 2)
+texture = ExtResource("4_8v8xs")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="Ruler"]
+position = Vector2(0, -110)
+gravity_scale = 0.0
+freeze = true
+constant_force = Vector2(0, 80)
+
+[node name="Pencil" type="Sprite2D" parent="Ruler/RigidBody2D"]
+texture_filter = 2
+material = ExtResource("2_66o7e")
+position = Vector2(-21, -32)
+rotation = -0.650209
+texture = ExtResource("3_ntog3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ruler/RigidBody2D"]
+shape = SubResource("CircleShape2D_op3a0")
+
+[node name="Area2D" type="Area2D" parent="Ruler"]
+position = Vector2(22.5, 6.5)
+scale = Vector2(0.831579, 1.4)
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ruler/Area2D"]
+position = Vector2(-6.61389, -0.714279)
+shape = SubResource("RectangleShape2D_c1sow")
+
+[node name="Button" type="Button" parent="Ruler"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -1.0
+offset_top = -115.0
+offset_right = 7.0
+offset_bottom = -107.0
+scale = Vector2(4.40434, 30.1071)
+mouse_default_cursor_shape = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Hud" parent="." instance=ExtResource("5_54h7b")]
+layout_mode = 1
+
+[connection signal="body_entered" from="Ruler/Area2D" to="Ruler" method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Ruler/Area2D" to="Ruler" method="_on_area_2d_body_exited"]
+[connection signal="button_down" from="Ruler/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="Ruler/Button" to="Ruler" method="_on_button_button_down"]
+[connection signal="button_up" from="Ruler/Button" to="." method="_on_button_button_up"]
+[connection signal="button_up" from="Ruler/Button" to="Ruler" method="_on_button_button_up"]
+[connection signal="mouse_entered" from="Ruler/Button" to="." method="_on_button_mouse_entered"]
+[connection signal="mouse_entered" from="Ruler/Button" to="Ruler" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Ruler/Button" to="." method="_on_button_mouse_exited"]
+[connection signal="mouse_exited" from="Ruler/Button" to="Ruler" method="_on_button_mouse_exited"]

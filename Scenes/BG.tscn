@@ -1,0 +1,67 @@
+[gd_scene load_steps=3 format=3 uid="uid://ryvkkr701wml"]
+
+[sub_resource type="Theme" id="Theme_3hpc8"]
+
+[sub_resource type="GDScript" id="GDScript_c7b3i"]
+resource_name = "BG"
+script/source = "extends Control
+
+const min_colour = 0.85
+const max_colour = 1
+
+var time_start = 0
+var time_now = 0
+var random_time = 4
+
+
+func _ready():
+	pass
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+
+func change_colour():
+	if ($Timer.is_stopped):
+		var tween = get_tree().create_tween()
+		var modulate_color : Color
+		modulate_color.r = randf_range(min_colour, max_colour)
+		modulate_color.g = randf_range(min_colour, max_colour)
+		modulate_color.b = randf_range(min_colour, max_colour)
+		modulate_color.a = 1
+		
+		tween.tween_property($ColorRect, 'modulate', modulate_color, random_time)
+
+
+func _on_timer_timeout():
+	if ($Timer.is_stopped):
+		random_time = randi_range(4, 12)
+		change_colour()
+		$Timer.start(random_time)
+"
+
+[node name="BG" type="Control"]
+modulate = Color(1, 0.921569, 1, 1)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_3hpc8")
+script = SubResource("GDScript_c7b3i")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = -18.0
+offset_top = -16.0
+offset_right = 22.0
+offset_bottom = 24.0
+scale = Vector2(16.8409, 9.84091)
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 5.0
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

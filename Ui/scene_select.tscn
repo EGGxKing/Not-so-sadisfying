@@ -1,0 +1,610 @@
+[gd_scene load_steps=15 format=3 uid="uid://c6m28e0jmerpg"]
+
+[ext_resource type="Texture2D" uid="uid://by2d3f5c3rhty" path="res://Sprites/Ui/Box.png" id="1_f3y3y"]
+[ext_resource type="Texture2D" uid="uid://chsaa5ogspbfx" path="res://Sprites/Ui/Box Hovored.png" id="2_acsko"]
+[ext_resource type="Material" uid="uid://6y43sq8kn8cj" path="res://Shader/pixel_shader_material.tres" id="3_xxrau"]
+[ext_resource type="FontFile" uid="uid://ccuf3hypfwj14" path="res://Assets/Fonts/return-of-ganon/retganon.ttf" id="4_1hiul"]
+[ext_resource type="FontFile" uid="uid://6ukq24iyrs8m" path="res://Assets/Fonts/Cookies/Cookies-Regular.ttf" id="5_g080p"]
+
+[sub_resource type="GDScript" id="GDScript_ycjf2"]
+resource_name = "LavelSelect"
+script/source = "extends Node2D
+
+
+func _on_button_mouse_exited():
+	$BoxHovored.visible = false
+
+
+func _on_button_mouse_entered():
+	$BoxHovored.visible = true
+
+
+func _on_button_pressed():
+	get_tree().change_scene_to_file(\"res://Scenes/scene_egg.tscn\")
+
+"
+
+[sub_resource type="GDScript" id="GDScript_tosgl"]
+script/source = "extends Node2D
+
+
+func _on_button_mouse_exited():
+	$BoxHovored.visible = false
+
+
+func _on_button_mouse_entered():
+	$BoxHovored.visible = true
+
+
+func _on_button_pressed():
+	get_tree().change_scene_to_file(\"res://Scenes/scene_puzzle.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_u5r2w"]
+resource_name = "button3"
+script/source = "extends Node2D
+
+
+func _on_button_mouse_exited():
+	$BoxHovored.visible = false
+
+
+func _on_button_mouse_entered():
+	$BoxHovored.visible = true
+
+
+func _on_button_pressed():
+	get_tree().change_scene_to_file(\"res://Scenes/scene_color_circle.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_6pxl4"]
+script/source = "extends Node2D
+
+
+func _on_button_mouse_exited():
+	$BoxHovored.visible = false
+
+
+func _on_button_mouse_entered():
+	$BoxHovored.visible = true
+
+
+func _on_button_pressed():
+	get_tree().change_scene_to_file(\"res://Scenes/scene_hammer.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_7ghur"]
+resource_name = "Box5"
+script/source = "extends Node2D
+
+func _on_button_mouse_exited():
+	$BoxHovored.visible = false
+
+
+func _on_button_mouse_entered():
+	$BoxHovored.visible = true
+
+
+func _on_button_pressed():
+	get_tree().change_scene_to_file(\"res://Scenes/scene_balls.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_etwo0"]
+script/source = "extends Node2D
+
+
+
+func _on_button_mouse_exited():
+	$BoxHovored.visible = false
+
+
+func _on_button_mouse_entered():
+	$BoxHovored.visible = true
+
+
+func _on_button_pressed():
+	get_tree().change_scene_to_file(\"res://Scenes/scene_hangers.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_lbpe5"]
+script/source = "extends Node2D
+
+
+func _on_button_mouse_exited():
+	$BoxHovored.visible = false
+
+
+func _on_button_mouse_entered():
+	$BoxHovored.visible = true
+
+
+func _on_button_pressed():
+	get_tree().change_scene_to_file(\"res://Scenes/scene_stripes.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_bppog"]
+script/source = "extends Node2D
+
+
+
+func _on_button_mouse_exited():
+	$RigidBody2D/BoxHovored.visible = false
+
+
+func _on_button_mouse_entered():
+	$RigidBody2D/Box.visible = true
+
+
+func _on_button_pressed():
+	$RigidBody2D.freeze = false
+	$RigidBody2D.apply_torque ( 50000.0 )
+	$RigidBody2D.linear_velocity.x =  -80
+	$RigidBody2D.linear_velocity.y =  -300
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uxg37"]
+
+[node name="Scene select" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Box1" type="Node2D" parent="."]
+position = Vector2(175, 122)
+scale = Vector2(0.5, 0.5)
+script = SubResource("GDScript_ycjf2")
+
+[node name="Box" type="Sprite2D" parent="Box1"]
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("1_f3y3y")
+
+[node name="BoxHovored" type="Sprite2D" parent="Box1"]
+visible = false
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("2_acsko")
+
+[node name="Label" type="Label" parent="Box1"]
+offset_left = -21.1539
+offset_top = -40.3846
+offset_right = 166.846
+offset_bottom = 398.615
+scale = Vector2(0.256869, 0.202258)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_1hiul")
+theme_override_font_sizes/font_size = 500
+text = "1"
+
+[node name="Button" type="Button" parent="Box1"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+material = ExtResource("3_xxrau")
+offset_left = -61.5384
+offset_top = -61.5384
+offset_right = 83.4616
+offset_bottom = 300.462
+scale = Vector2(0.802783, 0.356406)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_normal_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_disabled_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_g080p")
+theme_override_font_sizes/font_size = 10
+text = "1
+"
+flat = true
+icon_alignment = 1
+
+[node name="Box2" type="Node2D" parent="."]
+position = Vector2(275, 122)
+scale = Vector2(0.5, 0.5)
+script = SubResource("GDScript_tosgl")
+
+[node name="Box" type="Sprite2D" parent="Box2"]
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("1_f3y3y")
+
+[node name="BoxHovored" type="Sprite2D" parent="Box2"]
+visible = false
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("2_acsko")
+
+[node name="Label" type="Label" parent="Box2"]
+offset_left = -21.1539
+offset_top = -40.3846
+offset_right = 166.846
+offset_bottom = 398.615
+scale = Vector2(0.256869, 0.202258)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_1hiul")
+theme_override_font_sizes/font_size = 500
+text = "2"
+
+[node name="Button" type="Button" parent="Box2"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+material = ExtResource("3_xxrau")
+offset_left = -61.5384
+offset_top = -61.5384
+offset_right = 83.4616
+offset_bottom = 300.462
+scale = Vector2(0.802783, 0.356406)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_normal_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_disabled_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_g080p")
+theme_override_font_sizes/font_size = 10
+text = "1
+"
+flat = true
+icon_alignment = 1
+
+[node name="Box3" type="Node2D" parent="."]
+position = Vector2(375, 122)
+scale = Vector2(0.5, 0.5)
+script = SubResource("GDScript_u5r2w")
+
+[node name="Box" type="Sprite2D" parent="Box3"]
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("1_f3y3y")
+
+[node name="BoxHovored" type="Sprite2D" parent="Box3"]
+visible = false
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("2_acsko")
+
+[node name="Label" type="Label" parent="Box3"]
+offset_left = -21.1539
+offset_top = -40.3846
+offset_right = 166.846
+offset_bottom = 398.615
+scale = Vector2(0.256869, 0.202258)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_1hiul")
+theme_override_font_sizes/font_size = 500
+text = "3
+"
+
+[node name="Button" type="Button" parent="Box3"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+material = ExtResource("3_xxrau")
+offset_left = -61.5384
+offset_top = -61.5384
+offset_right = 83.4616
+offset_bottom = 300.462
+scale = Vector2(0.802783, 0.356406)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_normal_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_disabled_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_g080p")
+theme_override_font_sizes/font_size = 10
+text = "1
+"
+flat = true
+icon_alignment = 1
+
+[node name="Box4" type="Node2D" parent="."]
+position = Vector2(475, 122)
+scale = Vector2(0.5, 0.5)
+script = SubResource("GDScript_6pxl4")
+
+[node name="Box" type="Sprite2D" parent="Box4"]
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("1_f3y3y")
+
+[node name="BoxHovored" type="Sprite2D" parent="Box4"]
+visible = false
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("2_acsko")
+
+[node name="Label" type="Label" parent="Box4"]
+offset_left = -21.1539
+offset_top = -40.3846
+offset_right = 166.846
+offset_bottom = 398.615
+scale = Vector2(0.256869, 0.202258)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_1hiul")
+theme_override_font_sizes/font_size = 500
+text = "4
+"
+
+[node name="Button" type="Button" parent="Box4"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+material = ExtResource("3_xxrau")
+offset_left = -61.5384
+offset_top = -61.5384
+offset_right = 83.4616
+offset_bottom = 300.462
+scale = Vector2(0.802783, 0.356406)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_normal_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_disabled_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_g080p")
+theme_override_font_sizes/font_size = 10
+text = "1
+"
+flat = true
+icon_alignment = 1
+
+[node name="Box5" type="Node2D" parent="."]
+position = Vector2(175, 217)
+scale = Vector2(0.5, 0.5)
+script = SubResource("GDScript_7ghur")
+
+[node name="Box" type="Sprite2D" parent="Box5"]
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("1_f3y3y")
+
+[node name="BoxHovored" type="Sprite2D" parent="Box5"]
+visible = false
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("2_acsko")
+
+[node name="Label" type="Label" parent="Box5"]
+offset_left = -21.1539
+offset_top = -40.3846
+offset_right = 166.846
+offset_bottom = 398.615
+scale = Vector2(0.256869, 0.202258)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_1hiul")
+theme_override_font_sizes/font_size = 500
+text = "5"
+
+[node name="Button" type="Button" parent="Box5"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+material = ExtResource("3_xxrau")
+offset_left = -61.5384
+offset_top = -61.5384
+offset_right = 83.4616
+offset_bottom = 300.462
+scale = Vector2(0.802783, 0.356406)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_normal_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_disabled_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_g080p")
+theme_override_font_sizes/font_size = 10
+text = "1
+"
+flat = true
+icon_alignment = 1
+
+[node name="Box6" type="Node2D" parent="."]
+position = Vector2(275, 217)
+scale = Vector2(0.5, 0.5)
+script = SubResource("GDScript_etwo0")
+
+[node name="Box" type="Sprite2D" parent="Box6"]
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("1_f3y3y")
+
+[node name="BoxHovored" type="Sprite2D" parent="Box6"]
+visible = false
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("2_acsko")
+
+[node name="Label" type="Label" parent="Box6"]
+offset_left = -21.1539
+offset_top = -40.3846
+offset_right = 166.846
+offset_bottom = 398.615
+scale = Vector2(0.256869, 0.202258)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_1hiul")
+theme_override_font_sizes/font_size = 500
+text = "6"
+
+[node name="Button" type="Button" parent="Box6"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+material = ExtResource("3_xxrau")
+offset_left = -61.5384
+offset_top = -61.5384
+offset_right = 83.4616
+offset_bottom = 300.462
+scale = Vector2(0.802783, 0.356406)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_normal_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_disabled_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_g080p")
+theme_override_font_sizes/font_size = 10
+text = "1
+"
+flat = true
+icon_alignment = 1
+
+[node name="Box7" type="Node2D" parent="."]
+position = Vector2(375, 217)
+scale = Vector2(0.5, 0.5)
+script = SubResource("GDScript_lbpe5")
+
+[node name="Box" type="Sprite2D" parent="Box7"]
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("1_f3y3y")
+
+[node name="BoxHovored" type="Sprite2D" parent="Box7"]
+visible = false
+texture_filter = 2
+material = ExtResource("3_xxrau")
+scale = Vector2(2, 2)
+texture = ExtResource("2_acsko")
+
+[node name="Label" type="Label" parent="Box7"]
+offset_left = -21.1539
+offset_top = -40.3846
+offset_right = 166.846
+offset_bottom = 398.615
+scale = Vector2(0.256869, 0.202258)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_1hiul")
+theme_override_font_sizes/font_size = 500
+text = "7"
+
+[node name="Button" type="Button" parent="Box7"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+material = ExtResource("3_xxrau")
+offset_left = -61.5384
+offset_top = -61.5384
+offset_right = 83.4616
+offset_bottom = 300.462
+scale = Vector2(0.802783, 0.356406)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_normal_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_disabled_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_g080p")
+theme_override_font_sizes/font_size = 10
+text = "1
+"
+flat = true
+icon_alignment = 1
+
+[node name="Box8" type="Node2D" parent="."]
+position = Vector2(475, 217)
+scale = Vector2(0.5, 0.5)
+script = SubResource("GDScript_bppog")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="Box8"]
+scale = Vector2(2, 2)
+freeze = true
+
+[node name="Box" type="Sprite2D" parent="Box8/RigidBody2D"]
+texture_filter = 2
+material = ExtResource("3_xxrau")
+texture = ExtResource("1_f3y3y")
+
+[node name="BoxHovored" type="Sprite2D" parent="Box8/RigidBody2D"]
+visible = false
+texture_filter = 2
+material = ExtResource("3_xxrau")
+texture = ExtResource("2_acsko")
+
+[node name="Label" type="Label" parent="Box8/RigidBody2D"]
+offset_left = -6.0
+offset_top = -23.0
+offset_right = 182.0
+offset_bottom = 416.0
+rotation = 0.166686
+scale = Vector2(0.143628, 0.113093)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("4_1hiul")
+theme_override_font_sizes/font_size = 500
+text = "8"
+
+[node name="Button" type="Button" parent="Box8/RigidBody2D"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+material = ExtResource("3_xxrau")
+offset_left = -34.0
+offset_top = -34.0
+offset_right = 111.0
+offset_bottom = 328.0
+scale = Vector2(0.490766, 0.185858)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_normal_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/icon_disabled_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_g080p")
+theme_override_font_sizes/font_size = 10
+text = "1
+"
+flat = true
+icon_alignment = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Box8/RigidBody2D"]
+shape = SubResource("RectangleShape2D_uxg37")
+
+[connection signal="mouse_entered" from="Box1/Button" to="Box1" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Box1/Button" to="Box1" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="Box1/Button" to="Box1" method="_on_button_pressed"]
+[connection signal="mouse_entered" from="Box2/Button" to="Box2" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Box2/Button" to="Box2" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="Box2/Button" to="Box2" method="_on_button_pressed"]
+[connection signal="mouse_entered" from="Box3/Button" to="Box3" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Box3/Button" to="Box3" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="Box3/Button" to="Box3" method="_on_button_pressed"]
+[connection signal="mouse_entered" from="Box4/Button" to="Box4" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Box4/Button" to="Box4" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="Box4/Button" to="Box4" method="_on_button_pressed"]
+[connection signal="mouse_entered" from="Box5/Button" to="Box5" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Box5/Button" to="Box5" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="Box5/Button" to="Box5" method="_on_button_pressed"]
+[connection signal="mouse_entered" from="Box6/Button" to="Box6" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Box6/Button" to="Box6" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="Box6/Button" to="Box6" method="_on_button_pressed"]
+[connection signal="mouse_entered" from="Box7/Button" to="Box7" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Box7/Button" to="Box7" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="Box7/Button" to="Box7" method="_on_button_pressed"]
+[connection signal="mouse_entered" from="Box8/RigidBody2D/Button" to="Box8" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Box8/RigidBody2D/Button" to="Box8" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="Box8/RigidBody2D/Button" to="Box8" method="_on_button_pressed"]

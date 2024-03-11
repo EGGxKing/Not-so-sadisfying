@@ -1,0 +1,208 @@
+[gd_scene load_steps=15 format=3 uid="uid://btom87k2ao2y2"]
+
+[ext_resource type="Material" uid="uid://6y43sq8kn8cj" path="res://Shader/pixel_shader_material.tres" id="1_ht5rs"]
+[ext_resource type="Texture2D" uid="uid://dd84a2fger5v0" path="res://Sprites/Ui/Restart.png" id="2_p5upf"]
+[ext_resource type="Texture2D" uid="uid://bvjmj0f2wv4qc" path="res://Sprites/Ui/Restart Hovored.png" id="3_w1qh8"]
+[ext_resource type="Texture2D" uid="uid://by2d3f5c3rhty" path="res://Sprites/Ui/Box.png" id="4_p0ost"]
+[ext_resource type="Texture2D" uid="uid://chsaa5ogspbfx" path="res://Sprites/Ui/Box Hovored.png" id="5_t4imu"]
+[ext_resource type="Script" path="res://Ui/Next_Scene_Btn.gd" id="6_8emo3"]
+[ext_resource type="Texture2D" uid="uid://bq8wn5hen6ser" path="res://Sprites/Ui/Arrow.png" id="7_fp3r2"]
+[ext_resource type="AudioStream" uid="uid://cfnjjlve16jrm" path="res://Assets/Sounds/hit-metal-153323.mp3" id="8_fhwwl"]
+[ext_resource type="Texture2D" uid="uid://b6k6tm5qr6i8h" path="res://Sprites/Ui/Arrwo Hovored.png" id="8_qw0hm"]
+[ext_resource type="PackedScene" uid="uid://1i3r7bf3ue1r" path="res://Ui/bubbles.tscn" id="9_83ocb"]
+[ext_resource type="PackedScene" uid="uid://bqsw8kspo4aer" path="res://Ui/opcions.tscn" id="10_54hct"]
+
+[sub_resource type="GDScript" id="GDScript_dnbde"]
+script/source = "extends Control
+
+
+func _on_button_mouse_exited():
+	$BoxHovored.visible = false
+	
+
+func _on_button_mouse_entered():
+	$BoxHovored.visible = true
+
+
+func _on_button_pressed():
+	$\"../../Bubbles/GPUParticles2D\".emitting = true
+	$\"../../Opcions\".visible = true
+	$\"..\".visible = false
+"
+
+[sub_resource type="GDScript" id="GDScript_pvole"]
+script/source = "extends Control
+
+
+func _on_button_mouse_exited():
+	$RestartHovored.visible = false
+
+
+func _on_button_mouse_entered():
+	$RestartHovored.visible = true
+
+
+func _on_button_pressed():
+	get_tree().reload_current_scene()
+	#print(get_tree().current_scene)
+	#get_tree().change_scene_to_file(get_tree().current_scene)
+"
+
+[sub_resource type="GDScript" id="GDScript_aq1uh"]
+script/source = "extends Control
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	$\"Opcions Buttons/Back\".connect(\"opcions_closed\", close_bubbles)
+
+
+func close_bubbles():
+	$\"../Bubbles/GPUParticles2D\".emitting = false
+	$\"../HudButtons\".visible = true
+	$\".\".visible = false
+"
+
+[node name="Hud" type="Control"]
+z_index = 5
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Bubbles" parent="." instance=ExtResource("9_83ocb")]
+layout_mode = 1
+mouse_filter = 2
+
+[node name="HudButtons" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="Opcions box" type="Control" parent="HudButtons"]
+anchors_preset = 0
+offset_left = 35.0
+offset_top = 31.0
+offset_right = 75.0
+offset_bottom = 71.0
+scale = Vector2(0.724906, 0.724906)
+script = SubResource("GDScript_dnbde")
+
+[node name="Box" type="Sprite2D" parent="HudButtons/Opcions box"]
+texture_filter = 2
+material = ExtResource("1_ht5rs")
+texture = ExtResource("4_p0ost")
+
+[node name="BoxHovored" type="Sprite2D" parent="HudButtons/Opcions box"]
+visible = false
+texture = ExtResource("5_t4imu")
+
+[node name="Label" type="Label" parent="HudButtons/Opcions box"]
+layout_mode = 0
+offset_left = -19.3129
+offset_top = -53.8001
+offset_right = 265.687
+offset_bottom = 628.2
+scale = Vector2(0.135712, 0.148536)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 500
+text = "="
+
+[node name="Button" type="Button" parent="HudButtons/Opcions box"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -31.1181
+offset_top = -31.118
+offset_right = -23.1181
+offset_bottom = -23.118
+scale = Vector2(7.80486, 7.80486)
+mouse_default_cursor_shape = 2
+
+[node name="Restart2" type="Control" parent="HudButtons"]
+anchors_preset = 0
+offset_left = 102.0
+offset_top = 33.0
+offset_right = 142.0
+offset_bottom = 73.0
+scale = Vector2(0.574096, 0.574096)
+script = SubResource("GDScript_pvole")
+
+[node name="Restart" type="Sprite2D" parent="HudButtons/Restart2"]
+texture_filter = 2
+material = ExtResource("1_ht5rs")
+texture = ExtResource("2_p5upf")
+
+[node name="RestartHovored" type="Sprite2D" parent="HudButtons/Restart2"]
+visible = false
+texture_filter = 2
+material = ExtResource("1_ht5rs")
+texture = ExtResource("3_w1qh8")
+
+[node name="Button" type="Button" parent="HudButtons/Restart2"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -41.8049
+offset_top = -41.8049
+offset_right = -33.8049
+offset_bottom = -33.8049
+scale = Vector2(10.5577, 10.5577)
+mouse_default_cursor_shape = 2
+
+[node name="Next" type="Control" parent="HudButtons"]
+visible = false
+anchors_preset = 0
+offset_left = 574.0
+offset_top = 39.0
+offset_right = 614.0
+offset_bottom = 79.0
+scale = Vector2(0.916338, 0.916338)
+script = ExtResource("6_8emo3")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="HudButtons/Next"]
+stream = ExtResource("8_fhwwl")
+volume_db = 0.4
+pitch_scale = 2.0
+
+[node name="Arrow" type="Sprite2D" parent="HudButtons/Next"]
+texture_filter = 2
+material = ExtResource("1_ht5rs")
+texture = ExtResource("7_fp3r2")
+
+[node name="ArrwoHovored" type="Sprite2D" parent="HudButtons/Next"]
+visible = false
+texture_filter = 2
+material = ExtResource("1_ht5rs")
+texture = ExtResource("8_qw0hm")
+
+[node name="Button" type="Button" parent="HudButtons/Next"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -55.6563
+offset_top = -28.3738
+offset_right = -47.6563
+offset_bottom = -20.3738
+scale = Vector2(13.642, 6.61404)
+mouse_default_cursor_shape = 2
+
+[node name="Opcions" parent="." instance=ExtResource("10_54hct")]
+visible = false
+layout_mode = 1
+mouse_filter = 2
+script = SubResource("GDScript_aq1uh")
+
+[connection signal="mouse_entered" from="HudButtons/Opcions box/Button" to="HudButtons/Opcions box" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="HudButtons/Opcions box/Button" to="HudButtons/Opcions box" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="HudButtons/Opcions box/Button" to="HudButtons/Opcions box" method="_on_button_pressed"]
+[connection signal="mouse_entered" from="HudButtons/Restart2/Button" to="HudButtons/Restart2" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="HudButtons/Restart2/Button" to="HudButtons/Restart2" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="HudButtons/Restart2/Button" to="HudButtons/Restart2" method="_on_button_pressed"]
+[connection signal="mouse_entered" from="HudButtons/Next/Button" to="HudButtons/Next" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="HudButtons/Next/Button" to="HudButtons/Next" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="HudButtons/Next/Button" to="HudButtons/Next" method="_on_button_pressed"]

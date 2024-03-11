@@ -1,0 +1,323 @@
+[gd_scene load_steps=14 format=3 uid="uid://bqsw8kspo4aer"]
+
+[ext_resource type="Shader" path="res://Shader/pixel_shader_material.gdshader" id="1_45ilk"]
+[ext_resource type="Texture2D" uid="uid://1q855ywucyfv" path="res://Sprites/Ui/Bar .png" id="3_2vgnc"]
+[ext_resource type="FontFile" uid="uid://ccuf3hypfwj14" path="res://Assets/Fonts/return-of-ganon/retganon.ttf" id="3_au6l3"]
+[ext_resource type="Texture2D" uid="uid://bisa2qlqt8nis" path="res://Sprites/Ui/Bar Hobored.png" id="4_tlawc"]
+[ext_resource type="Material" uid="uid://6y43sq8kn8cj" path="res://Shader/pixel_shader_material.tres" id="5_28hft"]
+[ext_resource type="PackedScene" uid="uid://c3qwqomgsm0rk" path="res://Scenes/sound_slider.tscn" id="5_ffg5l"]
+[ext_resource type="PackedScene" uid="uid://c6m28e0jmerpg" path="res://Ui/scene_select.tscn" id="6_k57et"]
+[ext_resource type="Script" path="res://Ui/Quit.gd" id="7_r3pu5"]
+
+[sub_resource type="GDScript" id="GDScript_bgavn"]
+script/source = "extends Control
+
+func _on_button_mouse_exited():
+	$BarHobored.visible = false
+
+
+func _on_button_mouse_entered():
+	$BarHobored.visible = true
+
+
+func _on_button_pressed():
+	$\"../../Scene select\".visible = true
+	$\"..\".visible = false
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sqiet"]
+shader = ExtResource("1_45ilk")
+
+[sub_resource type="GDScript" id="GDScript_im2tx"]
+resource_name = "SoundScript"
+script/source = "extends Control
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+"
+
+[sub_resource type="GDScript" id="GDScript_l4re6"]
+script/source = "extends Control
+
+
+
+
+func _on_check_button_toggled(toggled_on):
+	if toggled_on ==true :
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+"
+
+[sub_resource type="GDScript" id="GDScript_j2s80"]
+resource_name = "BackButton"
+script/source = "extends Control
+
+signal opcions_closed
+
+func _on_button_mouse_exited():
+	$BarHobored.visible = false
+
+
+func _on_button_mouse_entered():
+	$BarHobored.visible = true
+
+
+func _on_button_pressed():
+	emit_signal(\"opcions_closed\")
+"
+
+[node name="Opcions" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Opcions Buttons" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.8, 0.8)
+
+[node name="LevelSelect" type="Control" parent="Opcions Buttons"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 410.0
+offset_top = 60.0
+offset_right = 450.0
+offset_bottom = 100.0
+scale = Vector2(1.5, 1.5)
+script = SubResource("GDScript_bgavn")
+
+[node name="Bar" type="Sprite2D" parent="Opcions Buttons/LevelSelect"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_sqiet")
+texture = ExtResource("3_2vgnc")
+
+[node name="BarHobored" type="Sprite2D" parent="Opcions Buttons/LevelSelect"]
+visible = false
+texture_filter = 2
+material = SubResource("ShaderMaterial_sqiet")
+texture = ExtResource("4_tlawc")
+
+[node name="Label" type="Label" parent="Opcions Buttons/LevelSelect"]
+layout_mode = 0
+offset_left = -75.3333
+offset_top = -18.0
+offset_right = 1960.67
+offset_bottom = 664.0
+scale = Vector2(0.0795583, 0.0795583)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_au6l3")
+theme_override_font_sizes/font_size = 500
+text = "Level select
+"
+horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="Opcions Buttons/LevelSelect"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -127.333
+offset_top = -23.3333
+offset_right = -119.333
+offset_bottom = -15.3333
+scale = Vector2(31.8711, 5.95331)
+
+[node name="Sound" type="Control" parent="Opcions Buttons"]
+anchors_preset = 0
+offset_left = 410.0
+offset_top = 137.5
+offset_right = 450.0
+offset_bottom = 177.5
+scale = Vector2(1.5, 1.5)
+script = SubResource("GDScript_im2tx")
+
+[node name="Bar" type="Sprite2D" parent="Opcions Buttons/Sound"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_sqiet")
+texture = ExtResource("3_2vgnc")
+
+[node name="Button" type="Button" parent="Opcions Buttons/Sound"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -127.333
+offset_top = -24.0
+offset_right = -119.333
+offset_bottom = -16.0
+scale = Vector2(31.8711, 5.95331)
+
+[node name="Label" type="Label" parent="Opcions Buttons/Sound"]
+layout_mode = 2
+offset_left = -33.3333
+offset_top = -20.0
+offset_right = 1062.67
+offset_bottom = 419.0
+scale = Vector2(0.0563872, 0.0563872)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_au6l3")
+theme_override_font_sizes/font_size = 500
+text = "Volume"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Opcions Buttons/Sound"]
+layout_mode = 0
+offset_left = -116.667
+offset_top = 2.83333
+offset_right = 979.333
+offset_bottom = 461.833
+scale = Vector2(0.212863, 1.24219)
+
+[node name="HSlider" parent="Opcions Buttons/Sound/VBoxContainer" instance=ExtResource("5_ffg5l")]
+layout_mode = 2
+
+[node name="Fulllscreen" type="Control" parent="Opcions Buttons"]
+anchors_preset = 0
+offset_left = 410.0
+offset_top = 214.25
+offset_right = 450.0
+offset_bottom = 254.25
+scale = Vector2(1.5, 1.5)
+script = SubResource("GDScript_l4re6")
+
+[node name="Bar" type="Sprite2D" parent="Opcions Buttons/Fulllscreen"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_sqiet")
+texture = ExtResource("3_2vgnc")
+
+[node name="CheckButton" type="CheckButton" parent="Opcions Buttons/Fulllscreen"]
+texture_filter = 2
+material = ExtResource("5_28hft")
+layout_mode = 0
+offset_left = 50.8333
+offset_top = -10.8333
+offset_right = 94.8333
+offset_bottom = 13.1667
+scale = Vector2(1.1096, 1.09378)
+button_pressed = true
+button_mask = 3
+
+[node name="Label" type="Label" parent="Opcions Buttons/Fulllscreen"]
+layout_mode = 0
+offset_left = -92.5
+offset_top = -17.3333
+offset_right = 1567.5
+offset_bottom = 664.667
+scale = Vector2(0.0795583, 0.0795583)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_au6l3")
+theme_override_font_sizes/font_size = 500
+text = "Fullscreen
+"
+
+[node name="Back" type="Control" parent="Opcions Buttons"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 410.0
+offset_top = 392.5
+offset_right = 450.0
+offset_bottom = 432.5
+scale = Vector2(1.5, 1.5)
+script = SubResource("GDScript_j2s80")
+
+[node name="Bar" type="Sprite2D" parent="Opcions Buttons/Back"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_sqiet")
+texture = ExtResource("3_2vgnc")
+
+[node name="BarHobored" type="Sprite2D" parent="Opcions Buttons/Back"]
+visible = false
+texture_filter = 2
+material = SubResource("ShaderMaterial_sqiet")
+texture = ExtResource("4_tlawc")
+
+[node name="Label" type="Label" parent="Opcions Buttons/Back"]
+layout_mode = 0
+offset_left = -30.0
+offset_top = -17.3333
+offset_right = 1124.0
+offset_bottom = 664.667
+scale = Vector2(0.0795583, 0.0795583)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_au6l3")
+theme_override_font_sizes/font_size = 500
+text = "Back
+"
+
+[node name="Button" type="Button" parent="Opcions Buttons/Back"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -127.333
+offset_top = -24.0
+offset_right = -119.333
+offset_bottom = -16.0
+scale = Vector2(31.8711, 5.95331)
+
+[node name="Quit" type="Control" parent="Opcions Buttons"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 410.0
+offset_top = 292.5
+offset_right = 450.0
+offset_bottom = 332.5
+scale = Vector2(1.5, 1.5)
+script = ExtResource("7_r3pu5")
+
+[node name="Bar" type="Sprite2D" parent="Opcions Buttons/Quit"]
+texture_filter = 2
+material = SubResource("ShaderMaterial_sqiet")
+texture = ExtResource("3_2vgnc")
+
+[node name="BarHobored" type="Sprite2D" parent="Opcions Buttons/Quit"]
+visible = false
+texture_filter = 2
+material = SubResource("ShaderMaterial_sqiet")
+texture = ExtResource("4_tlawc")
+
+[node name="Label" type="Label" parent="Opcions Buttons/Quit"]
+layout_mode = 0
+offset_left = -27.5
+offset_top = -17.3333
+offset_right = 1632.5
+offset_bottom = 664.667
+scale = Vector2(0.0795583, 0.0795583)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_au6l3")
+theme_override_font_sizes/font_size = 500
+text = "Quit"
+
+[node name="Button" type="Button" parent="Opcions Buttons/Quit"]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -127.333
+offset_top = -24.0
+offset_right = -119.333
+offset_bottom = -16.0
+scale = Vector2(31.8711, 5.95331)
+
+[node name="Scene select" parent="." instance=ExtResource("6_k57et")]
+visible = false
+layout_mode = 1
+
+[connection signal="mouse_entered" from="Opcions Buttons/LevelSelect/Button" to="Opcions Buttons/LevelSelect" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Opcions Buttons/LevelSelect/Button" to="Opcions Buttons/LevelSelect" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="Opcions Buttons/LevelSelect/Button" to="Opcions Buttons/LevelSelect" method="_on_button_pressed"]
+[connection signal="pressed" from="Opcions Buttons/Fulllscreen/CheckButton" to="Opcions Buttons/Fulllscreen" method="_on_check_button_pressed"]
+[connection signal="toggled" from="Opcions Buttons/Fulllscreen/CheckButton" to="Opcions Buttons/Fulllscreen" method="_on_check_button_toggled"]
+[connection signal="mouse_entered" from="Opcions Buttons/Back/Button" to="Opcions Buttons/Back" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Opcions Buttons/Back/Button" to="Opcions Buttons/Back" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="Opcions Buttons/Back/Button" to="Opcions Buttons/Back" method="_on_button_pressed"]
+[connection signal="button_down" from="Opcions Buttons/Quit/Button" to="Opcions Buttons/Quit" method="_on_button_button_down"]
+[connection signal="mouse_entered" from="Opcions Buttons/Quit/Button" to="Opcions Buttons/Quit" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="Opcions Buttons/Quit/Button" to="Opcions Buttons/Quit" method="_on_button_mouse_exited"]
